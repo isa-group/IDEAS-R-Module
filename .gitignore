@@ -1,0 +1,5 @@
+languages/.DS_Store
+*.DS_Store
+languages/R/.settings/
+languages/R/.classpath
+languages/R/.project

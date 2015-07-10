@@ -1,0 +1,28 @@
+{
+                id: "R-language",
+                extension: "r",
+                name: "R Language",
+                formats: [
+                     {
+                         format: "R_format",
+                         editorModeId: "ace/mode/R",
+                         _editorModeURI: "mode-R.js",
+                         checkLanguage: "true" 
+                     }
+                ],
+
+                operations: [
+
+                             {
+                                 id: "executeScript",
+                                 name: "Execute R script",
+                                 data: {},
+                                 _remoteExecution: "true",
+                                 action: "function(result) {alert(result)}" 
+                             }
+
+                             ],
+
+                inspectorLoader: "function(loader, format) {}" 
+
+            }
