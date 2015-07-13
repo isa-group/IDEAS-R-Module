@@ -1,5 +1,5 @@
 {
-                id: "R-language",
+                id: "ideas-R-language",
                 extension: "r",
                 name: "R Language",
                 formats: [

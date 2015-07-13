@@ -35,8 +35,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  *
  */
-define(function(require, exports, module)
-{
+ace.define('ace/mode/R', ['require', 'exports', 'module' , 'ace/tokenizer', 'ace/mode/abap_highlight_rules', 'ace/mode/folding/coffee', 'ace/range', 'ace/mode/text', 'ace/lib/oop'], function(require, exports, module) {
 
    var oop = require("../lib/oop");
    var lang = require("../lib/lang");

@@ -17,7 +17,6 @@ public class RLanguageController extends BaseLanguageController {
 
 
 	public AppResponse checkLanguage(String format, String content, String fileUri) {
-		// TODO Auto-generated method stub
 		/*en R no vamos a hacer checkeo */
 		AppResponse response=new AppResponse();
 		response.setMessage("No error were found in your script. Please, try to execute it to get the R output or errors found.");
