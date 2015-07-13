@@ -1,20 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	
-	<parent>
-		<groupId>es.us.isa.ideas.sample</groupId>
-		<artifactId>samplemodule</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>./../../pom.xml</relativePath>
-	</parent>
+	<modelVersion>4.0.0</modelVersion>		
 	
 	<groupId>es.us.isa.ideas.module.language.R</groupId>
-	<artifactId>R-language</artifactId>
+	<artifactId>ideas-R-language</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
-	<name>R-language</name>
+	<name>ideas-R-language</name>
 
 	<!-- Properties -->
 	<properties>
@@ -69,12 +63,7 @@
 			<artifactId>ideas-core</artifactId>
 			<version>${ideas.version}</version>
 		</dependency>
-		
-		<dependency>
-			<groupId>es.us.isa.ideas.module.language</groupId>
-			<artifactId>iagree-common</artifactId>
-			<version>0.0.2-SNAPSHOT</version>
-		</dependency>
+	
 		
 	</dependencies>
 	

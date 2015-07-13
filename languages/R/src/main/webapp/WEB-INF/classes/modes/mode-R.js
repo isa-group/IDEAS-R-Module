@@ -7,7 +7,7 @@
  * " Last Change: 2012 Oct 23
  */
 
-ace.define('ace/mode/SEDL4People', ['require', 'exports', 'module' , 'ace/tokenizer', 'ace/mode/abap_highlight_rules', 'ace/mode/folding/coffee', 'ace/range', 'ace/mode/text', 'ace/lib/oop'], function(require, exports, module) {
+ace.define('ace/mode/R', ['require', 'exports', 'module' , 'ace/tokenizer', 'ace/mode/abap_highlight_rules', 'ace/mode/folding/coffee', 'ace/range', 'ace/mode/text', 'ace/lib/oop'], function(require, exports, module) {
 
 var Tokenizer = require("../tokenizer").Tokenizer;
 var Rules = require("./sintaxis_highlight_rules").AbapHighlightRules;

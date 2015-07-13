@@ -3,3 +3,6 @@ languages/.DS_Store
 languages/R/.settings/
 languages/R/.classpath
 languages/R/.project
+languages/R/target/
+.settings/
+.project
