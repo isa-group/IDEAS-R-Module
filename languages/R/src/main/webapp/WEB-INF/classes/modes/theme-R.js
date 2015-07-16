@@ -1,7 +1,7 @@
 ace.define('ace/theme/R', ['require', 'exports', 'module' , 'ace/lib/dom'], function(require, exports, module) {
 
 exports.isDark = false;
-exports.cssClass = ".ace-eclipse";
+exports.cssClass = "ace-eclipse";
 exports.cssText = ".ace-eclipse .ace_gutter {\
   background: #ebebeb;\
   border-right: 1px solid rgb(159, 159, 159);\

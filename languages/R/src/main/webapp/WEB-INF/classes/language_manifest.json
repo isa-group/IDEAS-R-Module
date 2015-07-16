@@ -6,9 +6,9 @@
                      {
                          format: "R_format",
                          editorModeId: "ace/mode/R",
-                         editorThemeId: "ace/theme/R",
-				 		_editorThemeURI: "theme-R.js",
                          _editorModeURI: "mode-R.js",
+                         editorThemeId: "ace/theme/R",
+			 _editorThemeURI: "theme-R.js",                         
                          checkLanguage: "true" 
                      }
                 ],
