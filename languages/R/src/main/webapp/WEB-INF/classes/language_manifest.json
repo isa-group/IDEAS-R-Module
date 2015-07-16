@@ -20,7 +20,7 @@
                                  name: "Execute R script",
                                  data: {},
                                  _remoteExecution: "true",
-                                 action: "function(result) {alert(result)}" 
+                                 action: "function(result) {}" 
                              }
 
                              ],

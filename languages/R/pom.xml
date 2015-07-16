@@ -79,20 +79,20 @@
                         <artifactId>jmatharray</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>            
+            </dependency>    
+            
+            <dependency>
+ 			 <groupId>junit</groupId>
+  			 <artifactId>junit</artifactId>
+  			 <version>4.12</version>
+  			 <scope>test</scope>
+			</dependency>        
     </dependencies>
 	
     <!-- BUILD CONFIGURATION -->
     <build>
 
-        <plugins>
-            <!-- Maven Eclipse Plugin -->
-            <plugin>
-                <artifactId>maven-eclipse-plugin</artifactId>
-                <configuration>
-                    <wtpversion>2.5</wtpversion>
-                </configuration>
-            </plugin>
+        <plugins>            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
