@@ -1,5 +1,5 @@
 {
-                id: "R-language",
+                id: "ideas-R-language",
                 extension: "r",
                 name: "R Language",
                 formats: [
@@ -7,6 +7,8 @@
                          format: "R_format",
                          editorModeId: "ace/mode/R",
                          _editorModeURI: "mode-R.js",
+                         editorThemeId: "ace/theme/R",
+			 _editorThemeURI: "theme-R.js",                         
                          checkLanguage: "true" 
                      }
                 ],
@@ -18,7 +20,7 @@
                                  name: "Execute R script",
                                  data: {},
                                  _remoteExecution: "true",
-                                 action: "function(result) {alert(result)}" 
+                                 action: "function(result) {}" 
                              }
 
                              ],

@@ -3,3 +3,10 @@ languages/.DS_Store
 languages/R/.settings/
 languages/R/.classpath
 languages/R/.project
+languages/R/target/
+.settings/
+.project
+languages/R/REngine.jar
+languages/R/RserveEngine.jar
+languages/R/hamcrest-core-1.3.jar
+languages/R/junit-4.12.jar

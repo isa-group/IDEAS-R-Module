@@ -1,17 +1,45 @@
 /*
- * based on
- * " Vim SEDL Sintaxis file
- * "    Language: SEDL - Sintaxis
- * "    Revision: 2.1
- * "  Maintainer: GHR
- * " Last Change: 2012 Oct 23
+ * r_highlight_rules.js
+ *
+ * Copyright (C) 2009-11 by RStudio, Inc.
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Distributed under the BSD license:
+ *
+ * Copyright (c) 2010, Ajax.org B.V.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Ajax.org B.V. nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL AJAX.ORG B.V. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ *
  */
-
-ace.define('ace/mode/SEDL4People', ['require', 'exports', 'module' , 'ace/tokenizer', 'ace/mode/abap_highlight_rules', 'ace/mode/folding/coffee', 'ace/range', 'ace/mode/text', 'ace/lib/oop'], function(require, exports, module) {
+ace.define('ace/mode/R', ['require', 'exports', 'module' , 'ace/tokenizer', 'ace/mode/R_highlight_rules', 'ace/mode/folding/R', 'ace/range', 'ace/mode/text', 'ace/lib/oop'], function(require, exports, module) {
 
 var Tokenizer = require("../tokenizer").Tokenizer;
-var Rules = require("./sintaxis_highlight_rules").AbapHighlightRules;
-var FoldMode = require("./folding/coffee").FoldMode;
+var Rules = require("./sintaxis_highlight_rules").RHighlightRules;
+var FoldMode = require("./folding/R").FoldMode;
 var Range = require("../range").Range;
 var TextMode = require("./text").Mode;
 var oop = require("../lib/oop");
@@ -60,105 +88,173 @@ ace.define('ace/mode/sintaxis_highlight_rules', ['require', 'exports', 'module' 
 "use strict";
 
 var oop = require("../lib/oop");
+var lang = require("../lib/lang");
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var TexHighlightRules = require("./tex_highlight_rules").TexHighlightRules;
+ 
+var RHighlightRules = function() {
+var keywords = lang.arrayToMap(
+            ("function|if|in|break|next|repeat|else|for|return|switch|while|try|tryCatch|stop|warning|require|library|attach|detach|source|setMethod|setGeneric|setGroupGeneric|setClass")
+                  .split("|")
+            );
 
-var AbapHighlightRules = function() {
+      var buildinConstants = lang.arrayToMap(
+            ("NULL|NA|TRUE|FALSE|T|F|Inf|NaN|NA_integer_|NA_real_|NA_character_|" +
+             "NA_complex_").split("|")
+            );
 
-    var keywordMapper = this.createKeywordMapper({
-        "variable.language": "this",
-        "token_Keyword.blockHeader": 
-            "EXPERIMENT Constants Variables Hypothesis Desing Configuration",
-        "entity-name-tag.EXPERIMENT.1": 
-            "Object Population Accessible_Population Subjects Notes Annotations Responsible Colaborator",
-        "entity-name-tag.Constants.1": 
-            "Solver Termination_criterion RandomNumberGenerator NFeatures CTC CrossoverProb MutationProb PopulationSize Executions",
-        "variable.Variables.1":
-            "Factors NCFactors Outcomes Outcome Nuisancess",
-        "entity-name-tag.Hypothesis.values":
-            "Differential Descriptive Associational" ,
-        "variable.Hypothesis.values":
-            "Random RandomBlockAdhoc RandomBlock" ,
-        "entity-name-tag.Design.1":
-            "Sampling Groups Protocol Analyses Alignment Analyses_Spec Detailed_Design Assignment Bloking sizing Grouping" ,
-        "entity-name-tag.Configuration.1":
-            "Outputs Inputs Setting Experimental_Setting Experimental_Procedure Procedure Runtimes Libraries Command Treatment role format mapping" ,
-        "variable.functions.1":
-            "linear cuadratic Random Adhoc Pvalue Sthreshold freedom_degrees Mean Avg StdDev Range CI IQR Ranking Pearson ANOVA Friedman Tukey KruskalWalls TTest Wilcoxon Holms FactANOVAwRS Chi Square " +
-            "SignTest Kolmogorov-Smirnov Lilliefors Shapiro-Wilk Levene T-student McNemar Aligned Friedman Iman & Davenport Quade Cochran Q Bonferroni-Dunn Hochberg Hommel Holland Rom Finner Li Shaffer Nemenyi" ,
-        "entity-name-tag.types.1":
-            "float integer enum ordered boolean" ,
-        "entity-name-tag.inlineOperator.1":
-            "version rep sizingrole format mapping as in size",
-        "variable.Variables.inlineOperator.2":
-            "(File)",
-        "numeric.sets":
-        	"N Z Q R I C",
-        "correlation.Types":
-        	"BivariateRegression Spearman Kendall CRAMER LogLinear"
-            
-    }, "text", true, " ");
-    
-    var headers = "\\b(EXPERIMENT|Constants|Variables|Hypothesis|Design|Configuration)\\b";
-    var experiments = "\\b(Object|Population|Accessible_Population|Subjects|Responsible|Colaborator)\\b";
-    var constants = "\\b(Solver|Termination_criterion|RandomNumberGenerator|NFeatures|CTC|CrossoverProb|MutationProb|PopulationSize|Executions)\\b";
-    var variables = "\\b(Factors|NCFactors|Outcomes|Outcome|Nuisances)\\b";
-    var hypothesis = "(\\b(Differential|Descriptive|Associational)\\b)|(\\b(Random|RandomBlockAdhoc|RandomBlock)\\b)";
-    var desing = "\\b(Sampling|Groups|Protocol|Analyses|Alignment|Analyses_Spec|Detailed_Design|Assignment|Bloking|sizing|Grouping)\\b";
-    var configuration = "\\b(Outputs|Inputs|Setting|Experimental_Setting|Experimental_Procedure|Procedure|Runtimes|Libraries|Command|Treatment|role|format|mapping)\\b";
-    var global =  "(\\b(float|integer|enum|ordered|boolean)\\b)|(\\b(version|rep|sizingrole|format|mapping|as|in|size)\\b)" +
-                    "(\\b(File)\\b)";
-    var otherVariables = "(\\b\\d+(\\.\\d+)?\\b)";
-    var url = "((http://|https://|ftp://|www.|localhost/|localhost:)([^\\s])+)";
-    var comments = "(//.+)";
-    var functions = "(\\b(linear|cuadratic|Random|Adhoc|Pvalue|Sthreshold|freedom_degrees|Mean|Avg|StdDev|Range|CI|IQR|Ranking|Pearson|ANOVA|Friedman|Tukey|KruskalWalls|TTest|Wilcoxon|Holms|FactANOVAwRS|File|Chi Square|" +
-    		"SignTest|Kolmogorov-Smirnov|Lilliefors|Shapiro-Wilk|Levene|T-student|McNemar|Aligned Friedman|Iman & Davenport|Quade|Cochran Q|Bonferroni-Dunn|Hochberg|Hommel|Holland|Rom|Finner|Li|Shaffer|Nemenyi)\\b)";
-    var numerics = "(\\b(N|Z|Q|R|I|C)\\b)";
-    var correlation = "(\\b(BivariateRegression|Spearman|Kendall|CRAMER|LogLinear)\\b)";
-     
-    this.$rules = {
-        "start" : [
-            {token : "token_Keyword.blockHeader", regex : headers},
-            {token : "entity-name-tag.inlineOperator.1", regex : global},
-            {token : "variables", regex : otherVariables},
-            {token : "url", regex : url},
-            {token : "entity-name-tag.EXPERIMENT.1", regex : experiments},
-            {token : "string", regex : "'", next  : "qstring"},
-            {token : "entity-name-tag.Constants.1", regex : constants},
-            {token : "variable.Variables.1", regex : variables},
-            {token : "entity-name-tag.Hypothesis.values", regex : hypothesis},
-            {token : "variable.Hypothesis.values", regex : hypothesis},
-            {token : "entity-name-tag.Design.1", regex : desing},
-            {token : "entity-name-tag.Configuration.1", regex : configuration},
-            {token : "variable.functions.1", regex : global},
-            {token : "entity-name-tag.types.1", regex : global},
-            {token : "variable.Variables.inlineOperator.2", regex : global},
-            {token : "comments", regex : comments},
-            {token : "variable.functions.1", regex : functions},
-            {token : "numeric.sets", regex : numerics},
-            {token : "correlation.Types", regex : correlation},
-            {token : keywordMapper, regex : "\\b\\w+\\b"},
-            {token : "comment", regex : "\\/\\/.*$" },
-            {token : "comment",  regex : "\\/\\*", next : "comment" },//multiline comment
-            {caseInsensitive: true}
-        ],
-        "qstring" : [
-            {token : "constant.language.escape",   regex : "''"},
-            {token : "string", regex : "'",     next  : "start"},
-            {defaultToken : "string"}
-        ],
-        "comment" : [
-                     {token : "comment", regex : ".*?\\*\\/", next : "start"}, 
-                     {token : "comment",regex : ".+"}
-        ]
-    };
+      // regexp must not have capturing parentheses. Use (?:) instead.
+      // regexps are ordered -> the first match is used
+
+      this.$rules = {
+         "start" : [
+            {
+               // Roxygen
+               token : "comment.sectionhead",
+               regex : "#+(?!').*(?:----|====|####)\\s*$"
+            },
+            {
+               // Roxygen
+               token : "comment",
+               regex : "#+'",
+               next : "rd-start"
+            },
+            {
+               token : "comment",
+               regex : "#.*$"
+            },
+            {
+               token : "string", // multi line string start
+               regex : '["]',
+               next : "qqstring"
+            },
+            {
+               token : "string", // multi line string start
+               regex : "[']",
+               next : "qstring"
+            },
+            {
+               token : "constant.numeric", // hex
+               regex : "0[xX][0-9a-fA-F]+[Li]?\\b"
+            },
+            {
+               token : "constant.numeric", // explicit integer
+               regex : "\\d+L\\b"
+            },
+            {
+               token : "constant.numeric", // number
+               regex : "\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b"
+            },
+            {
+               token : "constant.numeric", // number with leading decimal
+               regex : "\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b"
+            },
+            {
+               token : "constant.language.boolean",
+               regex : "(?:TRUE|FALSE|T|F)\\b"
+            },
+            {
+               token : "identifier",
+               regex : "`.*?`"
+            },
+            {
+               onMatch : function(value) {
+                  if (keywords[value])
+                     return "keyword";
+                  else if (buildinConstants[value])
+                     return "constant.language";
+                  else if (value == '...' || value.match(/^\.\.\d+$/))
+                     return "variable.language";
+                  else
+                     return "identifier";
+               },
+               regex : "[a-zA-Z.][a-zA-Z0-9._]*\\b"
+            },
+            {
+               token : "keyword.operator",
+               regex : "%%|>=|<=|==|!=|\\->|<\\-|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||~|\\$|:"
+            },
+            {
+               token : "keyword.operator", // infix operators
+               regex : "%.*?%"
+            },
+            {
+               // Obviously these are neither keywords nor operators, but
+               // labelling them as such was the easiest way to get them
+               // to be colored distinctly from regular text
+               token : "paren.keyword.operator",
+               regex : "[[({]"
+            },
+            {
+               // Obviously these are neither keywords nor operators, but
+               // labelling them as such was the easiest way to get them
+               // to be colored distinctly from regular text
+               token : "paren.keyword.operator",
+               regex : "[\\])}]"
+            },
+            {
+               token : "text",
+               regex : "\\s+"
+            }
+         ],
+         "qqstring" : [
+            {
+               token : "string",
+               regex : '(?:(?:\\\\.)|(?:[^"\\\\]))*?"',
+               next : "start"
+            },
+            {
+               token : "string",
+               regex : '.+'
+            }
+         ],
+         "qstring" : [
+            {
+               token : "string",
+               regex : "(?:(?:\\\\.)|(?:[^'\\\\]))*?'",
+               next : "start"
+            },
+            {
+               token : "string",
+               regex : '.+'
+            }
+         ]
+      };
+
+      var rdRules = new TexHighlightRules("comment").getRules();
+
+      // Make all embedded TeX virtual-comment so they don't interfere with
+      // auto-indent.
+      for (var i = 0; i < rdRules["start"].length; i++) {
+         rdRules["start"][i].token += ".virtual-comment";
+      }
+
+      this.addRules(rdRules, "rd-");
+      this.$rules["rd-start"].unshift({
+          token: "text",
+          regex: "^",
+          next: "start"
+      });
+      this.$rules["rd-start"].unshift({
+         token : "keyword",
+         regex : "@(?!@)[^ ]*"
+      });
+      this.$rules["rd-start"].unshift({
+         token : "comment",
+         regex : "@@"
+      });
+      this.$rules["rd-start"].push({
+         token : "comment",
+         regex : "[^%\\\\[({\\])}]+"
+      });
 };
-oop.inherits(AbapHighlightRules, TextHighlightRules);
+oop.inherits(RHighlightRules, TextHighlightRules);
 
-exports.AbapHighlightRules = AbapHighlightRules;
+exports.RHighlightRules = RHighlightRules;
 });
 
 
-ace.define('ace/mode/folding/coffee', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/folding/fold_mode', 'ace/range'], function(require, exports, module) {
+ace.define('ace/mode/folding/R', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/folding/fold_mode', 'ace/range'], function(require, exports, module) {
 
 
 var oop = require("../../lib/oop");
@@ -244,3 +340,98 @@ oop.inherits(FoldMode, BaseFoldMode);
 }).call(FoldMode.prototype);
 
 });
+
+ace.define('ace/mode/tex_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop'],
+    function(require, exports, module) {
+"use strict";
+
+var oop = require("../lib/oop");
+var lang = require("../lib/lang");
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+
+var TexHighlightRules = function(textClass) {
+
+    if (!textClass)
+        textClass = "text";
+
+    // regexp must not have capturing parentheses. Use (?:) instead.
+    // regexps are ordered -> the first match is used
+
+    this.$rules = {
+        "start" : [
+	        {
+	            token : "comment",
+	            regex : "%.*$"
+	        }, {
+	            token : textClass, // non-command
+	            regex : "\\\\[$&%#\\{\\}]"
+	        }, {
+	            token : "keyword", // command
+	            regex : "\\\\(?:documentclass|usepackage|newcounter|setcounter|addtocounter|value|arabic|stepcounter|newenvironment|renewenvironment|ref|vref|eqref|pageref|label|cite[a-zA-Z]*|tag|begin|end|bibitem)\\b",
+               next : "nospell"
+	        }, {
+	            token : "keyword", // command
+	            regex : "\\\\(?:[a-zA-z0-9]+|[^a-zA-z0-9])"
+	        }, {
+               // Obviously these are neither keywords nor operators, but
+               // labelling them as such was the easiest way to get them
+               // to be colored distinctly from regular text
+               token : "paren.keyword.operator",
+	            regex : "[[({]"
+	        }, {
+               // Obviously these are neither keywords nor operators, but
+               // labelling them as such was the easiest way to get them
+               // to be colored distinctly from regular text
+               token : "paren.keyword.operator",
+	            regex : "[\\])}]"
+	        }, {
+	            token : textClass,
+	            regex : "\\s+"
+	        }
+        ],
+        // This mode is necessary to prevent spell checking, but to keep the
+        // same syntax highlighting behavior. The list of commands comes from
+        // Texlipse.
+        "nospell" : [
+           {
+               token : "comment",
+               regex : "%.*$",
+               next : "start"
+           }, {
+               token : "nospell." + textClass, // non-command
+               regex : "\\\\[$&%#\\{\\}]"
+           }, {
+               token : "keyword", // command
+               regex : "\\\\(?:documentclass|usepackage|newcounter|setcounter|addtocounter|value|arabic|stepcounter|newenvironment|renewenvironment|ref|vref|eqref|pageref|label|cite[a-zA-Z]*|tag|begin|end|bibitem)\\b"
+           }, {
+               token : "keyword", // command
+               regex : "\\\\(?:[a-zA-z0-9]+|[^a-zA-z0-9])",
+               next : "start"
+           }, {
+               token : "paren.keyword.operator",
+               regex : "[[({]"
+           }, {
+               token : "paren.keyword.operator",
+               regex : "[\\])]"
+           }, {
+               token : "paren.keyword.operator",
+               regex : "}",
+               next : "start"
+           }, {
+               token : "nospell." + textClass,
+               regex : "\\s+"
+           }, {
+               token : "nospell." + textClass,
+               regex : "\\w+"
+           }
+        ]
+    };
+};
+
+oop.inherits(TexHighlightRules, TextHighlightRules);
+
+exports.TexHighlightRules = TexHighlightRules;
+});
+
+
+
