@@ -1,30 +1,36 @@
 {
-                id: "ideas-R-language",
-                extension: "r",
-                name: "R Language",
-                formats: [
+                "id": "ideas-R-language",
+                "extension": "r",
+                "name": "R Language",
+                "formats": [
                      {
-                         format: "R_format",
-                         editorModeId: "ace/mode/R",
-                         _editorModeURI: "mode-R.js",
-                         editorThemeId: "ace/theme/R",
-			 _editorThemeURI: "theme-R.js",                         
-                         checkLanguage: "true" 
+                         "format": "R_format",
+                         "editorModeId": "ace/mode/R",
+                         "_editorModeURI": "mode-R.js",
+                         "editorThemeId": "ace/theme/R",
+			 "_editorThemeURI": "theme-R.js",                         
+                         "checkLanguage": "false" 
                      }
                 ],
 
-                operations: [
+                "operations": [
 
                              {
-                                 id: "executeScript",
-                                 name: "Execute R script",
-                                 data: {},
-                                 _remoteExecution: "true",
-                                 action: "function(result) {}" 
+                                 "id": "executeScript",
+                                 "name": "Execute",
+                                 "data": {},
+                                 "_remoteExecution": "true",
+                                 "action": "function(result) {}" 
+                             },
+                             {
+                                 "id": "lintScript",
+                                 "name":"Lint",
+                                 "data":{},
+                                 "_remoteExecution": "true",
+                                 "action": "function(result) {}" 
                              }
-
                              ],
 
-                inspectorLoader: "function(loader, format) {}" 
+                "inspectorLoader": "function(loader, format) {}" 
 
             }

@@ -7,9 +7,17 @@ import org.math.R.RserverConf;
 import org.math.R.Rsession;
 import es.us.isa.ideas.common.AppResponse;
 import es.us.isa.ideas.common.AppResponse.Status;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.UUID;
+import org.rosuda.REngine.REXPGenericVector;
+import org.rosuda.REngine.RList;
 
 public class RDelegate {
 	public final static String EXECUTE_SCRIPT = "executeScript";
+        public final static String LINT_SCRIPT = "lintScript";
 	String host="R://localhost:6311";
 
 	public RDelegate() {
@@ -40,6 +48,45 @@ public class RDelegate {
 			
 		
 		response.setHtmlMessage(htmlMessage);			
+			ps.close();
+			s.end();
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			response.setMessage(e.getMessage());
+			response.setStatus(Status.ERROR);
+		}
+		
+		return response;
+	}
+        
+        public AppResponse lintScript(String content, String fileUri){
+		AppResponse response= constructBaseResponse(fileUri);
+		
+		try {
+                    
+                        File f=savecontentToTempFile(content);
+			//Open connection 
+			RserverConf c= RserverConf.parse(host);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			PrintStream ps = new PrintStream(baos);
+			Rsession s= Rsession.newInstanceTry(ps, c);
+                        if(s.isPackageInstalled("lintr","0.2.0") && s.isPackageLoaded("lintr")){
+                            String command="lintr::lint(\""+f.getAbsolutePath().replace("\\","\\\\\\\\")+"\")";
+                            REXPGenericVector result=(REXPGenericVector)s.eval(command);                                                
+                            response.setAnnotations(ErrorBuilder.buildErrorStructure(result.asList()));
+                            if(result.length()==0){
+                                response.setStatus(Status.OK);
+                                response.setMessage("Everything is Ok!");
+                            }else{
+                                response.setStatus(Status.OK_PROBLEMS);
+                                response.setMessage(String.valueOf(result.length())+" issues were found!");
+                            }
+                        }else{
+                            response.setStatus(Status.OK_PROBLEMS);
+                            response.setMessage("The required library 'lintr' is not installed or loaded in the backend R.");
+                        }
+                            
 			ps.close();
 			s.end();
 			
@@ -106,4 +153,16 @@ public class RDelegate {
 		
 		return res;
 	}*/
+
+    private File savecontentToTempFile(String content) throws IOException {        
+            UUID uuid=UUID.randomUUID();
+    	    //create a temp file
+    	    File temp = File.createTempFile(uuid.toString(), ".tmp"); 
+ 
+            try ( //write it
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(temp))) {
+                bw.write(content);
+            }
+            return temp;    	         	
+    }
 }
