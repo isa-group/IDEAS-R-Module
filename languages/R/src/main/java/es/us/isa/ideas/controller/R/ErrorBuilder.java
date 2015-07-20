@@ -42,8 +42,8 @@ public class ErrorBuilder {
                         myRString=(REXPString)error.get(3);
 			if (myRString.asString().equals("style"))
 				annotations.setType("info");
-			/*else if (err.getSeverity().equals(ERROR_SEVERITY.WARNING))
-				annotations.setType("warning");*/        
+			else if (myRString.asString().equals("warning"))
+				annotations.setType("warning");        
 			else
 				annotations.setType("error");
                         

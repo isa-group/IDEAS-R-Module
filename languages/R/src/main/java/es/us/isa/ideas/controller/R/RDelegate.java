@@ -71,7 +71,9 @@ public class RDelegate {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			PrintStream ps = new PrintStream(baos);
 			Rsession s= Rsession.newInstanceTry(ps, c);
-                        if(s.isPackageInstalled("lintr","0.2.0") && s.isPackageLoaded("lintr")){
+                        if(s.isPackageInstalled("lintr","0.2.0")){
+                            if(!s.isPackageLoaded("lintr"))
+                               s.loadPackage("lintr");
                             String command="lintr::lint(\""+f.getAbsolutePath().replace("\\","\\\\\\\\")+"\")";
                             REXPGenericVector result=(REXPGenericVector)s.eval(command);                                                
                             response.setAnnotations(ErrorBuilder.buildErrorStructure(result.asList()));
@@ -84,7 +86,7 @@ public class RDelegate {
                             }
                         }else{
                             response.setStatus(Status.OK_PROBLEMS);
-                            response.setMessage("The required library 'lintr' is not installed or loaded in the backend R.");
+                            response.setMessage("The required library 'lintr' is not installed in the backend R.");
                         }
                             
 			ps.close();
