@@ -51,6 +51,47 @@ public class RDelegate {
 		
 		return response;
 	}
+        
+        public AppResponse lintScript(String content, String fileUri){
+		AppResponse response= constructBaseResponse(fileUri);
+		
+		try {
+                    
+                        File f=savecontentToTempFile(content);
+			//Open connection 
+			RserverConf c= RserverConf.parse(host);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			PrintStream ps = new PrintStream(baos);
+			Rsession s= Rsession.newInstanceTry(ps, c);
+                        if(s.isPackageInstalled("lintr","0.2.0")){
+                            if(!s.isPackageLoaded("lintr"))
+                               s.loadPackage("lintr");
+                            String command="lintr::lint(\""+f.getAbsolutePath().replace("\\","\\\\\\\\")+"\")";
+                            REXPGenericVector result=(REXPGenericVector)s.eval(command);                                                
+                            response.setAnnotations(ErrorBuilder.buildErrorStructure(result.asList()));
+                            if(result.length()==0){
+                                response.setStatus(Status.OK);
+                                response.setMessage("Everything is Ok!");
+                            }else{
+                                response.setStatus(Status.OK_PROBLEMS);
+                                response.setMessage(String.valueOf(result.length())+" issues were found!");
+                            }
+                        }else{
+                            response.setStatus(Status.OK_PROBLEMS);
+                            response.setMessage("The required library 'lintr' is not installed in the backend R.");
+                        }
+                            
+			ps.close();
+			s.end();
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			response.setMessage(e.getMessage());
+			response.setStatus(Status.ERROR);
+		}
+		
+		return response;
+	}
 	
 	/*private String asHTML(List<REXP> exp) {
 		String res="<pre>";		
