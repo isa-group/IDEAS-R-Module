@@ -21,6 +21,13 @@
                                  data: {},
                                  _remoteExecution: "true",
                                  action: "function(result) {}" 
+                             },
+                             {
+                                 id: "lint",
+                                 name: "Lint",
+                                 data: {},
+                                 _remoteExecution: "true",
+                                 action: "function(result) {}" 
                              }
 
                              ],

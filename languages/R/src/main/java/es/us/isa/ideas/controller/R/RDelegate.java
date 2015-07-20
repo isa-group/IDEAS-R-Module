@@ -1,15 +1,25 @@
 package es.us.isa.ideas.controller.R;
 
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.util.UUID;
+
 import org.math.R.RserverConf;
 import org.math.R.Rsession;
+import org.rosuda.REngine.REXPGenericVector;
+
 import es.us.isa.ideas.common.AppResponse;
 import es.us.isa.ideas.common.AppResponse.Status;
 
+
 public class RDelegate {
 	public final static String EXECUTE_SCRIPT = "executeScript";
+	public final static String LINT = "lint";
 	String host="R://localhost:6311";
 
 	public RDelegate() {
@@ -28,15 +38,16 @@ public class RDelegate {
 			Rsession s= Rsession.newInstanceTry(ps, c);
 			s.eval(content);
 			
-			String font = baos.toString("UTF-8");
+			String f = baos.toString("UTF-8");
 		
-			String font2=font.replace("[eval] "+content, "");
-			String font3= font2.replaceFirst("(org).{1,}", "");
-//			String m= "(!!) Rserve R://localhost:6311 is not accesible.\n! null\n Trying to spawn R://localhost:6311\nEnvironment variables:\nR_HOME=C:\\Program Files\\R\\R-3.2.1\\\nchecking Rserve is available...\nok\nstarting R Daemon... R://localhost:6311\nok\nLocal Rserve started. (Version 103)";
-		
-			
+			String f2=f.replace("[eval] "+content, "");
+			String f3= f2.replaceFirst("(org).{1,}", "");
+			//String m= "(!!) Rserve R://localhost:6311 is not accessible.\n ! null\r\nTrying to spawn R://localhost:6311\r\nEnvironment variables:\n  R_HOME=C:\\Program Files\\R\\R-3.2.1\\\r\nchecking Rserve is available... \r\n  ok\r\nstarting R daemon... R://localhost:6311\r\n  ok\r\nLocal Rserve started. (Version 103)\r\n";
+			f3=f3.replace("(!!) Rserve R://localhost:6311 is not accessible.\n ! null\r\nTrying to spawn R://localhost:6311\r\nEnvironment variables:\n  R_HOME=C:\\Program Files\\R\\R-3.2.1\\\r\nchecking Rserve is available... \r\n  ok\r\nstarting R daemon... R://localhost:6311\r\n  ok\r\nLocal Rserve started. (Version 103)\r\n", "");
+			String f4=f3.replaceAll(".{1,}(org.rosuda).{1,}","" );
+			f4=f4.replaceAll("(org.).{1,}", "");
 	//		String font4= font3.replaceFirst("(!!) Rserve R://localhost:6311 is not accesible.\n ! null\nTrying to spawn R://localhost:6311\nEnvironment variables:\n R_HOME=C:\\Program Files\\R\\R-3.2.1\\\nchecking Rserve is available...\n ok\nstarting R Daemon... R://localhost:6311\n ok\nLocal Rserve started. (Version 103)", "");
-			String htmlMessage= "<pre>"+font3+"</pre>";
+			String htmlMessage= "<pre>"+f4+"</pre>";
 			
 		
 		response.setHtmlMessage(htmlMessage);			
@@ -118,7 +129,17 @@ public class RDelegate {
 		appResponse.setStatus(Status.OK);
 		return appResponse;
 	}
+	private File savecontentToTempFile(String content) throws IOException {        
+        UUID uuid=UUID.randomUUID();
+    //create a temp file
+    File temp = File.createTempFile(uuid.toString(), ".tmp");
 
+        try ( //write it
+                BufferedWriter bw = new BufferedWriter(new FileWriter(temp))) {
+            bw.write(content);
+        }
+        return temp;            
+}
 	/*private Boolean evalCommand(String command, Rsession s2,REXP result) {
 		Boolean res=false;
 		if(checkNotprintingCommand(command)){

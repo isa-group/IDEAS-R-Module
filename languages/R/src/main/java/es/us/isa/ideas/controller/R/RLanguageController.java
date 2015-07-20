@@ -45,6 +45,8 @@ public class RLanguageController extends BaseLanguageController {
 		RDelegate RD= new RDelegate();
 		if(id.equals(RDelegate.EXECUTE_SCRIPT)){
 			response=RD.executeScript(content, fileUri);
+		}else if(id.equals(RDelegate.LINT)){
+			response=RD.lintScript(content, fileUri);
 		}else{
 			response = new AppResponse();
 			response.setMessage("No operation with id " + id);
