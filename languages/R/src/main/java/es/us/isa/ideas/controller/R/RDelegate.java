@@ -7,10 +7,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Path;
 import java.util.UUID;
 import org.math.R.RserverConf;
 import org.math.R.Rsession;
 import org.rosuda.REngine.REXPGenericVector;
+import org.rosuda.REngine.REXPMismatchException;
+
 import es.us.isa.ideas.common.AppResponse;
 import es.us.isa.ideas.common.AppResponse.Status;
 
@@ -20,11 +23,13 @@ public class RDelegate {
 	public final static String LINT = "lint";
 	public final static String END_SESSION= "endsession";
 	String host="R://localhost:6311";
+	//String Khost="R://localhost:6312";
 	public Rsession s;
+	// Rsession killer;
 	public PrintStream ps;
 	public ByteArrayOutputStream baos;
 	public Boolean isConnected=false;
-	
+	public Integer PID;
 	
 	
 	
@@ -36,24 +41,49 @@ public class RDelegate {
 		this.baos = baos;
 	}else{
 		try{
-			RserverConf c= RserverConf.parse(host);
-			this.baos = new ByteArrayOutputStream();
-			 this.ps = new PrintStream(this.baos);
-			this.s= Rsession.newInstanceTry(this.ps, c);
-			
-				}catch(Exception e){
-					System.out.println(e.getMessage());
-					//TODO: hay que poner gestón de excepciones.
-				}
+                RserverConf c= RserverConf.parse(host);
+              //  RserverConf Kc= RserverConf.parse(Khost);
+                this.baos = new ByteArrayOutputStream();
+                 this.ps = new PrintStream(this.baos);
+                this.s= Rsession.newInstanceTry(this.ps, c);
+             //   killer=Rsession.newInstanceTry(System.out, Kc);
+                
+                }catch(Exception e){
+                        System.out.println(e.getMessage());
+                        //TODO: hay que poner gestón de excepciones.
+                }
+		
 		}
 	}
-
-	public AppResponse endSession(){
+       public AppResponse endSession(){
+            AppResponse res;
+            
+            if(PID.equals(-1)){
+                res=endSession2();
+            }else{
+            	try{
+              Rsession killer= Rsession.newInstanceTry(System.out,null);
+              killer.eval("tools::pskill("+ this.PID + ")");
+              killer.eval("tools::pskill("+ this.PID + ", tools::SIGKILL)");
+//              Integer suicide=s.eval("Sys.getpid()").asInteger();
+//             killer.eval("tools::pskill("+ suicide+ ", tools::SIGKILL)");
+            
+              killer.end();
+              killer.connection.shutdown();
+            
+            	}catch(Exception e){
+            		e.printStackTrace();
+            	}
+              res=endSession2();
+              PID=-1;
+            }
+            return res;
+        }
+	public AppResponse endSession2(){
 		AppResponse res= new AppResponse();
+                                
 		try{	
-			String[] vars=s.ls();
-			if(vars!=null)
-				this.s.rm(vars);
+		this.s.rmAll();
 		this.baos.reset();
 		this.s.close();
 		this.s.end();
@@ -66,7 +96,7 @@ public class RDelegate {
 			e.printStackTrace();
 			
 		}
-		
+              
 		return res;
 	}
 	
@@ -74,28 +104,25 @@ public class RDelegate {
 		AppResponse response= constructBaseResponse(fileUri);
 		
 		try {
+			//Create the Temporary Directory
+			/* WorkspaceSync ws= new WorkspaceSync(this.s);
+			 Path tempD=ws.setTempDirectory(fileUri);*/
+			 //createSymbLinkAtIdeas - tempD
+			  //ws.setRWorkingDirectory(tempD);
 			 
-			/*RserverConf c= RserverConf.parse(host);
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			PrintStream ps = new PrintStream(baos);
-			Rsession s= Rsession.newInstanceTry(ps, c);*/
+			//Execute Script 	
+			this.PID= this.s.eval("Sys.getpid()").asInteger();
+
 			baos.reset();
+			
 			s.eval(content);
-			
 			String f = baos.toString("UTF-8");
-		
-			String f2=f.replace("[eval] "+content, "");
-			f2=f2.replaceAll("(.eval).{1,}", "");
-			String f3= f2.replaceFirst("(org).{1,}", "");
-			//String m= "(!!) Rserve R://localhost:6311 is not accessible.\n ! null\r\nTrying to spawn R://localhost:6311\r\nEnvironment variables:\n  R_HOME=C:\\Program Files\\R\\R-3.2.1\\\r\nchecking Rserve is available... \r\n  ok\r\nstarting R daemon... R://localhost:6311\r\n  ok\r\nLocal Rserve started. (Version 103)\r\n";
-			f3=f3.replace("(!!) Rserve R://localhost:6311 is not accessible.\n ! null\r\nTrying to spawn R://localhost:6311\r\nEnvironment variables:\n  R_HOME=C:\\Program Files\\R\\R-3.2.1\\\r\nchecking Rserve is available... \r\n  ok\r\nstarting R daemon... R://localhost:6311\r\n  ok\r\nLocal Rserve started. (Version 103)\r\n", "");
-			String f4=f3.replaceAll(".{1,}(org.rosuda).{1,}","" );
-			f4=f4.replaceAll("(org.).{1,}", "");
-	
-			String htmlMessage= "<pre>"+f4+"</pre>";
 			
-		
-		response.setHtmlMessage(htmlMessage);			
+			String htmlMessage= "<pre>"+cleanMessage(f,content)+"</pre>";
+			response.setHtmlMessage(htmlMessage);	
+		//	this.PID=-1;
+			//close Temporary Directory
+			//WorkspaceSync.deleteTempDirectory(tempD);
 			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -106,17 +133,14 @@ public class RDelegate {
 		return response;
 	}
         
-        public AppResponse lintScript(String content, String fileUri){
+
+		public AppResponse lintScript(String content, String fileUri){
 		AppResponse response= constructBaseResponse(fileUri);
 		
 		try {
                     
                         File f=savecontentToTempFile(content);
-			//Open connection 
-			/*RserverConf c= RserverConf.parse(host);
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			PrintStream ps = new PrintStream(baos);
-			Rsession s= Rsession.newInstanceTry(ps, c);*/
+			
                         if(s.isPackageInstalled("lintr","0.2.0")){
                             if(!s.isPackageLoaded("lintr"))
                                s.loadPackage("lintr");
@@ -135,8 +159,6 @@ public class RDelegate {
                             response.setMessage("The required library 'lintr' is not installed in the backend R.");
                         }
                             
-			/*ps.close();
-			s.end();*/
 			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -165,5 +187,14 @@ public class RDelegate {
         }
         return temp;            
 }
-	
+	private String cleanMessage(String f, String content) {
+    	String f2=f.replace("[eval] "+content, "");
+		f2=f2.replaceAll("(.eval).{1,}", "");
+		String f3= f2.replaceFirst("(org).{1,}", "");
+		f3=f3.replace("(!!) Rserve R://localhost:6311 is not accessible.\n ! null\r\nTrying to spawn R://localhost:6311\r\nEnvironment variables:\n  R_HOME=C:\\Program Files\\R\\R-3.2.1\\\r\nchecking Rserve is available... \r\n  ok\r\nstarting R daemon... R://localhost:6311\r\n  ok\r\nLocal Rserve started. (Version 103)\r\n", "");
+		String f4=f3.replaceAll(".{1,}(org.rosuda).{1,}","" );
+		f4=f4.replaceAll("(org.).{1,}", "");
+	return f4;
+}
+
 }
