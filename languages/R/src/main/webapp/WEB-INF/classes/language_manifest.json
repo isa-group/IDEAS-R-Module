@@ -20,7 +20,30 @@
                                  name: "Execute R script",
                                  data: {},
                                  _remoteExecution: "true",
-                                 action: "function(result) {}" 
+                                 action: "function(operationStructure,fileUri) {
+                                  var res;
+                                    var temp;
+                                CommandApi.doDocumentOperation(operationStructure.id,operationStructure.data,EditorManager.currentUri, function(result){
+                                        temp = result;
+                                        $.ajax('/file/copyProjectToTemp?temDirectory='+temp+'&fileUri='+fileUri, {
+                                            'type' : 'get', 
+                                            'data' : operationStructure.id,
+                                            'success' : function(result) {
+                                                CommandApi.doDocumentOperation('executeScript2',operationStructure.data,fileUri, function(result){
+                                                    res = result;
+                                                    /*CommandApi.echo(res);*/
+                                                },false);
+                                                
+                                                                                                
+                                            },
+                                            'onError' : function(result) { 
+                                            console.log('[ERROR] '+result);
+                                            },
+                                            'async' : false, 
+                                        });
+                                
+                                 
+                                 }" 
                              },
                              {
                                  id: "lint",

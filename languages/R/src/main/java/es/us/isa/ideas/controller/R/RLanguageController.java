@@ -36,11 +36,12 @@ public class RLanguageController extends BaseLanguageController {
 		return response;
 	}
 
-	@RequestMapping(value = "/operation/{id}/execute", method = RequestMethod.POST)
+	@RequestMapping(value = "/operation/{id}/execute/", method = RequestMethod.POST)
 	@ResponseBody	
 	public AppResponse executeOperation(String id, String content, String fileUri,HttpServletRequest request) {
 		RDelegate RD=(RDelegate)request.getSession().getAttribute("RDelegate");
                 if(RD==null) {
+                	request.setAttribute("IDEAS-R-OutputFolder", true);
                     RD = new RDelegate(null, null, null);
                     request.getSession().setAttribute("RDelegate", RD);
                 }
@@ -52,6 +53,8 @@ public class RLanguageController extends BaseLanguageController {
 		
 		if(id.equals(RDelegate.EXECUTE_SCRIPT)){
 			response=RD.executeScript(content, fileUri);
+		}else if(id.equals(RDelegate.EXECUTE_SCRIPT2)){
+			response=RD.executeScript2(content, fileUri);
 		}else if(id.equals(RDelegate.LINT)){
 			response=RD.lintScript(content, fileUri);
 		}else if(id.equals(RDelegate.END_SESSION)){

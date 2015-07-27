@@ -6,7 +6,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 import org.math.R.RserverConf;
@@ -20,8 +22,10 @@ import es.us.isa.ideas.common.AppResponse.Status;
 
 public class RDelegate {
 	public final static String EXECUTE_SCRIPT = "executeScript";
+	public final static String EXECUTE_SCRIPT2 = "executeScript2";
 	public final static String LINT = "lint";
 	public final static String END_SESSION= "endsession";
+	public static String tempD;
 	String host="R://localhost:6311";
 	//String Khost="R://localhost:6312";
 	public Rsession s;
@@ -42,17 +46,15 @@ public class RDelegate {
 	}else{
 		try{
                 RserverConf c= RserverConf.parse(host);
-              //  RserverConf Kc= RserverConf.parse(Khost);
                 this.baos = new ByteArrayOutputStream();
                  this.ps = new PrintStream(this.baos);
                 this.s= Rsession.newInstanceTry(this.ps, c);
-             //   killer=Rsession.newInstanceTry(System.out, Kc);
-                
-                }catch(Exception e){
-                        System.out.println(e.getMessage());
-                        //TODO: hay que poner gestón de excepciones.
-                }
-		
+                 
+       }catch(Exception e){
+                System.out.println(e.getMessage());
+                //TODO: hay que poner gestón de excepciones.
+          }
+	
 		}
 	}
        public AppResponse endSession(){
@@ -99,31 +101,38 @@ public class RDelegate {
               
 		return res;
 	}
-	
 	public AppResponse executeScript(String content, String fileUri){
 		AppResponse response= constructBaseResponse(fileUri);
-		
+		//Create the Temporary Directory
+		WorkspaceSync ws= new WorkspaceSync(this.s);
+		  tempD=ws.setTempDirectory();
+		 if(tempD!=null){
+		 response.setMessage(tempD);
+		 }else{
+			 response.setMessage("No se pudo crear el directorio temporal.");
+			 response.setStatus(Status.ERROR);
+		 }
+	
+						
+		return response; 
+	}
+	public AppResponse executeScript2(String content, String fileUri){
+		AppResponse response= constructBaseResponse(fileUri);
 		try {
-			//Create the Temporary Directory
-			/* WorkspaceSync ws= new WorkspaceSync(this.s);
-			 Path tempD=ws.setTempDirectory(fileUri);*/
-			 //createSymbLinkAtIdeas - tempD
-			  //ws.setRWorkingDirectory(tempD);
-			 
 			//Execute Script 	
 			this.PID= this.s.eval("Sys.getpid()").asInteger();
-
 			baos.reset();
-			
+
 			s.eval(content);
+			
+			/*File file=savecontentToTempFile2(content);
+			s.source(file);*/
 			String f = baos.toString("UTF-8");
 			
 			String htmlMessage= "<pre>"+cleanMessage(f,content)+"</pre>";
 			response.setHtmlMessage(htmlMessage);	
-		//	this.PID=-1;
-			//close Temporary Directory
-			//WorkspaceSync.deleteTempDirectory(tempD);
 			
+			WorkspaceSync.endExecution(tempD, fileUri);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			response.setMessage(e.getMessage());
@@ -187,6 +196,17 @@ public class RDelegate {
         }
         return temp;            
 }
+	/*private File savecontentToTempFile2(String content) throws IOException {        
+        UUID uuid=UUID.randomUUID();
+    //create a temp file
+    File temp = File.createTempFile(uuid.toString(), ".R");
+
+        try ( //write it
+                BufferedWriter bw = new BufferedWriter(new FileWriter(temp))) {
+            bw.write(content);
+        }
+        return temp;            
+}*/
 	private String cleanMessage(String f, String content) {
     	String f2=f.replace("[eval] "+content, "");
 		f2=f2.replaceAll("(.eval).{1,}", "");

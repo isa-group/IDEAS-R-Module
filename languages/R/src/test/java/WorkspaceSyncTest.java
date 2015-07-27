@@ -10,18 +10,45 @@ public class WorkspaceSyncTest {
 	public static void main(String[] args) {
 		RserverConf c= RserverConf.parse("R://localhost:6311");
 		Rsession s= Rsession.newInstanceTry(System.out, c);
+		String fileUri="...\\Scripts R\\Gauss_RScripts\\Script_Prueba_1.R";
 		
 		WorkspaceSync ws= new WorkspaceSync(s);
-		//Path td=ws.setTempDirectory();
-		//Path actualWD=WorkspaceSync.getProjectPath();
-		//ws.setRWorkingDirectory(td);
 		
-		//Path changedPath= WorkspaceSync.getProjectPath();
+		try {
+			String tem=testSetTemp(ws);
+			System.out.println(s.asString("getwd()"));
+			//testEndExecution(ws,fileUri,tem);
+			//testDeleteTemp(tem);
+			testMoveFiles(tem,fileUri);
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		s.end();
+	}
+
+	private static void testMoveFiles(String tempD,String fileUri) {
+		WorkspaceSync.moveFiles(tempD, fileUri, true);
 		
-		//System.out.println("temp Direc. path: "+td.toString());
-	//	System.out.println("WD. path: "+actualWD.toString());
-		//System.out.println("New Path: "+changedPath.toString());
+	}
+
+	private static void testDeleteTemp(String tempD) {
+		WorkspaceSync.deleteTempDirectory(tempD);
+
 		
+	}
+
+	private static void testEndExecution(WorkspaceSync ws, String fileUri, String tem) {
+		WorkspaceSync.endExecution(tem, fileUri);
+		
+	}
+
+	private static String testSetTemp(WorkspaceSync ws) {
+		
+		String temp = ws.setTempDirectory();
+		
+		System.out.println(temp);
+		return temp;
 		
 	}
 	
