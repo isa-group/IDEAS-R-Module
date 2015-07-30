@@ -16,6 +16,7 @@ import org.math.R.Rsession;
 import org.rosuda.REngine.REXPGenericVector;
 import org.rosuda.REngine.REXPMismatchException;
 
+import es.us.isa.ideas.common.AppAnnotations;
 import es.us.isa.ideas.common.AppResponse;
 import es.us.isa.ideas.common.AppResponse.Status;
 
@@ -25,6 +26,7 @@ public class RDelegate {
 	public final static String EXECUTE_SCRIPT2 = "executeScript2";
 	public final static String LINT = "lint";
 	public final static String END_SESSION= "endsession";
+	public static final Object DELETE_TEMP = "deleteTemp";
 	public static String tempD;
 	String host="R://localhost:6311";
 	//String Khost="R://localhost:6312";
@@ -107,7 +109,8 @@ public class RDelegate {
 		WorkspaceSync ws= new WorkspaceSync(this.s);
 		  tempD=ws.setTempDirectory();
 		 if(tempD!=null){
-		 response.setMessage(tempD);
+		response.setMessage("executing R script");	
+		 response.setContext(tempD);
 		 }else{
 			 response.setMessage("No se pudo crear el directorio temporal.");
 			 response.setStatus(Status.ERROR);
@@ -122,17 +125,14 @@ public class RDelegate {
 			//Execute Script 	
 			this.PID= this.s.eval("Sys.getpid()").asInteger();
 			baos.reset();
-
 			s.eval(content);
 			
-			/*File file=savecontentToTempFile2(content);
-			s.source(file);*/
 			String f = baos.toString("UTF-8");
 			
 			String htmlMessage= "<pre>"+cleanMessage(f,content)+"</pre>";
 			response.setHtmlMessage(htmlMessage);	
 			
-			WorkspaceSync.endExecution(tempD, fileUri);
+			//WorkspaceSync.endExecution(tempD, fileUri);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			response.setMessage(e.getMessage());
@@ -216,5 +216,12 @@ public class RDelegate {
 		f4=f4.replaceAll("(org.).{1,}", "");
 	return f4;
 }
+	public AppResponse deleteTemp() {
+		AppResponse response = new AppResponse(); 
+		WorkspaceSync.deleteTemp(RDelegate.tempD);
+		response.setStatus(Status.OK);
+		response.setMessage("Execution finished");
+		return response;
+	}
 
 }
