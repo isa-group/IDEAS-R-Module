@@ -19,8 +19,39 @@
                                  id: "executeScript",
                                  name: "Execute R script",
                                  data: {},
-                                 _remoteExecution: "true",
-                                 action: "function(result) {}" 
+                                 _remoteExecution: "false",
+                                 action: "function(operationStructure) { 
+                                 var res;
+                                 var fileUri= EditorManager.currentUri;
+                                  var temp;
+                                  CommandApi.doDocumentOperation(operationStructure.id,operationStructure.data,fileUri, function(result){
+                                  	  temp=result.context;
+                                  	 $.ajax('/IDEAS/file/copyProjectToTemp?temDirectory='+temp+'&fileUri='+fileUri, {
+                                  	 'type' : 'get', 
+                                  	 'data' : {},
+                                   	'success' : function(result) {
+                                   		CommandApi.doDocumentOperation('executeScript2',operationStructure.data,fileUri, function(result){
+                                   		
+                                   		$.ajax('/IDEAS/file/copyTemptoProject?temDirectory='+temp+'&fileUri='+fileUri, {
+											                    'type' : 'get', 
+                    											'data' : operationStructure.id,
+                    											'success' : function(result) {
+                                              CommandApi.doDocumentOperation('deleteTemp',operationStructure.data,fileUri,function(result){
+                                                        
+													//OperationMetrics.stop();
+                                               
+                                              },true);
+
+                                          },
+                    				'onError' : function(result) { 
+                    					console.log('[ERROR] '+result);},
+                                    			'async' : true,});
+                                   	},true);},
+                                   	'onError' : function(result) {
+                                   	console.log('[ERROR] '+result);},
+                                   	'async' : true,
+                                   	});},true);
+                                   	}" 
                              },
                              {
                                  id: "lint",
