@@ -1,6 +1,6 @@
 package es.us.isa.ideas.controller.R;
 
-import static com.sun.corba.se.spi.presentation.rmi.StubAdapter.request;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

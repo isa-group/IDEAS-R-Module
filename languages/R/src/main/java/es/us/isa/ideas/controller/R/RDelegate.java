@@ -27,11 +27,11 @@ public class RDelegate {
 	public final static String LINT = "lint";
 	public final static String END_SESSION= "endsession";
 	public static final Object DELETE_TEMP = "deleteTemp";
-	public static String tempD;
+	public  String tempD;
 	String host="R://localhost:6311";
 	//String Khost="R://localhost:6312";
 	public Rsession s;
-	// Rsession killer;
+	public static Rsession copy;
 	public PrintStream ps;
 	public ByteArrayOutputStream baos;
 	public Boolean isConnected=false;
@@ -58,6 +58,7 @@ public class RDelegate {
           }
 	
 		}
+	copy=this.s;
 	}
        public AppResponse endSession(){
             AppResponse res;
@@ -218,10 +219,19 @@ public class RDelegate {
 }
 	public AppResponse deleteTemp() {
 		AppResponse response = new AppResponse(); 
-		WorkspaceSync.deleteTemp(RDelegate.tempD);
+		WorkspaceSync.deleteTemp(this.tempD);
 		response.setStatus(Status.OK);
 		response.setMessage("Execution finished");
 		return response;
 	}
+	public static Rsession getSession(){
+		//return this.s;
+		return copy;
+	}
+	public static String[] getEnvironmentVariables(){
+//		return this.s.ls();
+		return copy.ls();
+	}
+	
 
 }

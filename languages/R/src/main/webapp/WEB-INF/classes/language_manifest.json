@@ -26,32 +26,37 @@
                                   var temp;
                                   CommandApi.doDocumentOperation(operationStructure.id,operationStructure.data,fileUri, function(result){
                                   	  temp=result.context;
-                                  	 $.ajax('/IDEAS/file/copyProjectToTemp?temDirectory='+temp+'&fileUri='+fileUri, {
+                                  	 $.ajax('file/copyProjectToTemp?temDirectory='+temp+'&fileUri='+fileUri, {
                                   	 'type' : 'get', 
                                   	 'data' : {},
                                    	'success' : function(result) {
                                    		CommandApi.doDocumentOperation('executeScript2',operationStructure.data,fileUri, function(result){
                                    		
-                                   		$.ajax('/IDEAS/file/copyTemptoProject?temDirectory='+temp+'&fileUri='+fileUri, {
+                                   		$.ajax('file/copyTemptoProject?temDirectory='+temp+'&fileUri='+fileUri, {
 											                    'type' : 'get', 
                     											'data' : operationStructure.id,
                     											'success' : function(result) {
-                                              CommandApi.doDocumentOperation('deleteTemp',operationStructure.data,fileUri,function(result){
-                                                        
-													//OperationMetrics.stop();
-                                               
-                                              },true);
+                                              CommandApi.doDocumentOperation('deleteTemp',operationStructure.data,fileUri,function(result){},true);
 
                                           },
-                    				'onError' : function(result) { 
-                    					console.log('[ERROR] '+result);},
-                                    			'async' : true,});
+                    				'onError' : function(result) {console.log('[ERROR] '+result);},
+                                    'async' : true,});
+                                    
+                                    $.ajax('/ideas-R-language/inspector/environment',{
+																					  'type':'post',
+																					  'data':{},
+																					  'success':function(result){$('#editorInspectorLoader').load(result.context);},
+																					  'onError':function(result){console.log([ERROR]+result.context);},
+																					  'async':true,
+																					  });
+                                    
                                    	},true);},
-                                   	'onError' : function(result) {
-                                   	console.log('[ERROR] '+result);},
-                                   	'async' : true,
-                                   	});},true);
+                                   	'onError' : function(result) {console.log('[ERROR] '+result);},
+                                   	'async' : true,});
+                                   	},true);
+                                   		
                                    	}" 
+                                   	
                              },
                              {
                                  id: "lint",

@@ -14,7 +14,8 @@
 
 		<security:intercept-url pattern="/**" access="permitAll"
 			requires-channel="https" />
-
+		<security:intercept-url pattern="/js/**" access="permitAll"  requires-channel="https" />
+		<security:intercept-url pattern="/views/**" access="permitAll"  requires-channel="https" />
 		<security:port-mappings>
 			<security:port-mapping http="8888" https="8881" />
 		</security:port-mappings>

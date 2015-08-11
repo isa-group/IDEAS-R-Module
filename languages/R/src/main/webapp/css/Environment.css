@@ -1,0 +1,30 @@
+input{
+	margin: 0.5em;
+	padding: 0.1em;
+	border-radius: 0.1em;
+}
+input:focus{
+	background-color:#87CEEB;
+}
+span{
+	width:7em;
+	margin-left:0.5em;
+	padding:0.2em;
+	
+}
+.variables div{
+		border-bottom-style:solid;
+		border-radius:0.1em;
+		border-color: #C0C0C0;
+		border-width: 0.2em;		
+}
+li{
+	border-style:solid;
+	border-radius:0.2em;
+	border-color:#C0C0C0;
+	border-bottom-style: none;
+	
+}
+li:focus{
+	color:#2888DB;
+}

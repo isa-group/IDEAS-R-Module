@@ -21,7 +21,7 @@ public class ConnectionTest2 {
  		 r= s.asString(command);
  		 String r2= s.asString(command1);
  		 String r3= s.asHTML(command);
- 		 String r4= s.asHTML(command1);
+ 		 String r4= s.asHTML(command2);
  		 System.out.println("=============================================");
  		 System.out.println(r);
  		 System.out.println("");
