@@ -12,3 +12,4 @@ languages/R/hamcrest-core-1.3.jar
 languages/R/junit-4.12.jar
 languages/R/.Rout
 languages/R/src/main/webapp/META-INF/context.xml
+languages/R/nb-configuration.xml

@@ -1,9 +1,11 @@
 package es.us.isa.ideas.controller.R;
 
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,8 +31,9 @@ public class RDelegate {
 	public static final Object DELETE_TEMP = "deleteTemp";
 	public  String tempD;
 	String host="R://localhost:6311";
-	//String Khost="R://localhost:6312";
+	public static String uri;
 	public Rsession s;
+	public static String[] plots;
 	public static Rsession copy;
 	public PrintStream ps;
 	public ByteArrayOutputStream baos;
@@ -51,7 +54,13 @@ public class RDelegate {
                 this.baos = new ByteArrayOutputStream();
                  this.ps = new PrintStream(this.baos);
                 this.s= Rsession.newInstanceTry(this.ps, c);
-                 
+                String setUp1 = "savegraphs <- local({i <- 1; function(){if(dev.cur()>1){filename<- paste('IDEAS-R-OutputFolder/SavedPlot',i,'.jpg',sep=\"\");file.create(filename);jpeg( file=filename ); i <<- i + 1; }}})";
+                String setUp2="setHook('before.plot.new', savegraphs )";
+                String setUp3="setHook('before.grid.newpage', savegraphs )";
+               
+                 this.s.eval(setUp1);
+                 this.s.eval(setUp2);
+                 this.s.eval(setUp3);
        }catch(Exception e){
                 System.out.println(e.getMessage());
                 //TODO: hay que poner gestón de excepciones.
@@ -60,7 +69,36 @@ public class RDelegate {
 		}
 	copy=this.s;
 	}
-       public AppResponse endSession(){
+      /* private String readFile(File file) {
+    	   String res=""; 
+    	   File archivo = file;
+    	      FileReader fr = null;
+    	      BufferedReader br = null;
+    	 
+    	      try {
+    	         fr = new FileReader (archivo);
+    	         br = new BufferedReader(fr);
+    	 
+    	         // Lectura del fichero
+    	         String linea;
+    	         while((linea=br.readLine())!=null)
+    	            res+=linea;
+    	      }
+    	      catch(Exception e){
+    	         e.printStackTrace();
+    	      }finally{  	         
+    	         try{                    
+    	            if( null != fr ){   
+    	               fr.close();     
+    	            }                  
+    	         }catch (Exception e2){ 
+    	            e2.printStackTrace();
+    	         }
+    	      }
+    	   
+		return res;
+	}*/
+	public AppResponse endSession(){
             AppResponse res;
             
             if(PID.equals(-1)){
@@ -106,9 +144,11 @@ public class RDelegate {
 	}
 	public AppResponse executeScript(String content, String fileUri){
 		AppResponse response= constructBaseResponse(fileUri);
+		uri=fileUri;
 		//Create the Temporary Directory
 		WorkspaceSync ws= new WorkspaceSync(this.s);
 		  tempD=ws.setTempDirectory();
+		  
 		 if(tempD!=null){
 		response.setMessage("executing R script");	
 		 response.setContext(tempD);
@@ -129,7 +169,8 @@ public class RDelegate {
 			s.eval(content);
 			
 			String f = baos.toString("UTF-8");
-			
+			s.eval("graphics.off()");
+			plots=RInspector.getPlots(this.tempD);
 			String htmlMessage= "<pre>"+cleanMessage(f,content)+"</pre>";
 			response.setHtmlMessage(htmlMessage);	
 			
@@ -225,12 +266,19 @@ public class RDelegate {
 		return response;
 	}
 	public static Rsession getSession(){
-		//return this.s;
+		
 		return copy;
 	}
+	
 	public static String[] getEnvironmentVariables(){
-//		return this.s.ls();
+
 		return copy.ls();
+	}
+	public static String[] getPlots(){
+		return plots;
+	}
+	public static String getUri(){
+		return uri;
 	}
 	
 

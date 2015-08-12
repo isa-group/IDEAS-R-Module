@@ -66,6 +66,7 @@ border-color:#C0C0C0;
   <div class="variables">
 	  
     <% 
+   
     String format= "";
     format+="<table class=\"table table-hover\">";
     format+="<tr><th>Variables</th><th>Values</th></tr>";
@@ -82,6 +83,7 @@ border-color:#C0C0C0;
     }
     format+="</table>";
     %>
+   
     <%=format %>
     
     <div class="buttons" id="buttons">

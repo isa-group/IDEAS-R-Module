@@ -3,7 +3,7 @@
 <%@page language="java" import="es.us.isa.ideas.controller.R.RInspector" %>
 
 <script type="text/javascript">
-
+	
 			function onClick(tabName){
 				if(tabName=='environments'){
 					$('#plot').toggleClass('active')
@@ -38,8 +38,14 @@
 				//de momento no va a haber nada especial en el refresh
 				onClick(tabName);
 			}
-			function canvasPlot(){
-				
+			function canvasPlot(fileUri){
+				var canvas= document.getElementById("canvasPlot");
+				var img=$('#selecPlot').val();
+				var url='/file/get/'+fileuri+'/IDEAS-R-OutputFolder/'+img;
+				$.get(url, function(image){
+					var con=canvas.getContext("2d");
+					con.drawImage(image,100,100);
+				});
 			}
 			function expand(TrId){
 				var id=TrId.substring(1); //quitarle la v.
@@ -51,5 +57,7 @@
 				  }
 				
 			}
+			
+			
 	
  </script>

@@ -1,5 +1,7 @@
 package es.us.isa.ideas.controller.R;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.math.R.Rsession;
@@ -84,8 +86,14 @@ public class RInspector {
 		return res; 
 	}
 	public static String[] getVariables(){
-		
-		return RDelegate.getEnvironmentVariables();
+		List<String> result= Lists.newArrayList();
+		String[] res=RDelegate.getEnvironmentVariables();
+		for(String r:res){
+			if(!r.equals("savegraphs")){
+				result.add(r);
+			}
+		}
+		return result.toArray(new String[0]);
 	}
 	/**
 	 * Gives the values of the variables in HTML with the following format:
@@ -100,7 +108,7 @@ public class RInspector {
 		if(var!=null){
 			int index=0;
 		for(String variable:var){
-			
+		if(!variable.equals("savegraphs")){
 			String st=s.asHTML("print("+variable+")");
 					st=st.replace("<html>", "");
 					st.replace("</html>", "");
@@ -119,11 +127,12 @@ public class RInspector {
 				}
 			res.add(r);
 			index++;
-		}
-		}else{
-			res.add("No value found.");
-		}
 		
+		}else{
+			res.add("<div class=\"extendable\" id=\"value"+index+"\"> no value found.</div>");
+		}
+		}
+	}
 		return  res.toArray(new String[0]);
 	}
 	
@@ -159,4 +168,37 @@ public class RInspector {
 		
 		return res;
 	}
+	public static String[] getPlots(){
+		
+		
+		return RDelegate.getPlots();
+	}
+
+	public static String[] getPlots(String temp) {
+		List<String> res = Lists.newArrayList();
+		try {
+			File t= new File(temp);
+			File o= t.toPath().resolve("IDEAS-R-OutputFolder").toFile();
+			
+			for(String f:o.list()){
+				if(f.contains(".jpg")){
+					String[] spl= f.split("/");
+					res.add(spl[spl.length-1]);
+				}
+			}
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		return res.toArray(new String[0]);
+	}
+	public static String getFileUri(){
+		String res= RDelegate.getUri();
+		String[] sp= res.split("/");
+		
+		return sp[0]+"/"+sp[1];
+	}
+
+
 }
+
