@@ -41,11 +41,18 @@
 			function canvasPlot(fileUri){
 				var canvas= document.getElementById("canvasPlot");
 				var img=$('#selecPlot').val();
-				var url='/file/get/'+fileuri+'/IDEAS-R-OutputFolder/'+img;
-				$.get(url, function(image){
+				var url='/file/get/'+fileUri+'/IDEAS-R-OutputFolder/'+img;
+				//window.alert(fileUri);
+				/*$.get(url, function(image){
 					var con=canvas.getContext("2d");
 					con.drawImage(image,100,100);
-				});
+				});*/
+				var image= new Image();
+				image.src=url;
+				canvas.height=image.height;
+				canvas.width=image.width;
+				var con=canvas.getContext("2d");
+				con.drawImage(image,10,10);
 			}
 			function expand(TrId){
 				var id=TrId.substring(1); //quitarle la v.

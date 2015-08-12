@@ -18,6 +18,9 @@
 		
 		%>
 <style>
+.container{
+overflow:auto;
+}
 .variables{
 overflow:auto;
 }
