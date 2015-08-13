@@ -164,7 +164,12 @@ public class RDelegate {
 		AppResponse response= constructBaseResponse(fileUri);
 		try {
 			//Execute Script 	
-			this.PID= this.s.eval("Sys.getpid()").asInteger();
+			try {
+				this.PID= this.s.eval("Sys.getpid()").asInteger();
+			} catch (Exception e) {
+				
+				e.printStackTrace();
+			}
 			baos.reset();
 			s.eval(content);
 			
