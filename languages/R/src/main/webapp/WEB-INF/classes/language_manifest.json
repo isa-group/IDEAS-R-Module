@@ -55,24 +55,27 @@
                                    	'async' : true,});
                                    	},true);
                                    		
-                                   	}" 
-                                
+                                   	}" ,
+                                 icon:"glyphicon glyphicon-play",
+                                 iconOnly:"true"
+                                   	
                              },
                              {
                                  id: "lint",
                                  name: "Lint",
                                  data: {},
                                  _remoteExecution: "true",
-                                 action: "function(result) {}" 
-                                
+                                 action: "function(result) {}" ,
+                                 icon:"glyphicon glyphicon-ok",
+                                 iconOnly:"false"
                              },
                              {
                                  id: "endsession",
                                  name: "End session",
                                  data: {},
                                  _remoteExecution: "true",
-                                 action: "function(result) {}" 
-                                
+                                 action: "function(result) {}" ,
+                                 icon:"glyphicon glyphicon-remove"
                                  
                              }
 

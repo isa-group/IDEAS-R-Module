@@ -20,7 +20,9 @@ import org.rosuda.REngine.REXPMismatchException;
 
 import es.us.isa.ideas.common.AppAnnotations;
 import es.us.isa.ideas.common.AppResponse;
+
 import es.us.isa.ideas.common.AppResponse.Status;
+import java.io.UnsupportedEncodingException;
 
 
 public class RDelegate {
@@ -146,6 +148,13 @@ public class RDelegate {
 		AppResponse response= constructBaseResponse(fileUri);
 		uri=fileUri;
 		//Create the Temporary Directory
+		if(!tryConnection(this.s)){
+			RDelegate r= new RDelegate(null,null,null);
+			this.s=r.s;
+			this.baos=r.baos;
+			this.ps=r.ps;
+			
+		}
 		WorkspaceSync ws= new WorkspaceSync(this.s);
 		  tempD=ws.setTempDirectory();
 		  
@@ -160,12 +169,15 @@ public class RDelegate {
 						
 		return response; 
 	}
+	
 	public AppResponse executeScript2(String content, String fileUri){
 		AppResponse response= constructBaseResponse(fileUri);
 		try {
-			//Execute Script 	
+			//Execute Script 
+			
 			try {
 				this.PID= this.s.eval("Sys.getpid()").asInteger();
+					
 			} catch (Exception e) {
 				
 				e.printStackTrace();
@@ -179,12 +191,13 @@ public class RDelegate {
 			String htmlMessage= "<pre>"+cleanMessage(f,content)+"</pre>";
 			response.setHtmlMessage(htmlMessage);	
 			
-			//WorkspaceSync.endExecution(tempD, fileUri);
+		
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			response.setMessage(e.getMessage());
 			response.setStatus(Status.ERROR);
 		}
+		
 		
 		return response;
 	}
@@ -262,6 +275,20 @@ public class RDelegate {
 		String f4=f3.replaceAll(".{1,}(org.rosuda).{1,}","" );
 		f4=f4.replaceAll("(org.).{1,}", "");
 	return f4;
+}
+	private boolean tryConnection(Rsession s) {
+        boolean res;
+        try{
+	baos.reset();
+	s.eval("getwd()");
+	String f = baos.toString("UTF-8");
+            res=!f.contains("[exception]");
+        }catch(Exception e){
+            e.printStackTrace();
+            res=false;
+        }
+	
+	return res;
 }
 	public AppResponse deleteTemp() {
 		AppResponse response = new AppResponse(); 
