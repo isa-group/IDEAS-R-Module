@@ -1,4 +1,5 @@
 
+<%@page import="es.us.isa.ideas.controller.R.RDelegate"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page language="java" import="java.util.*" %>
 <%@page language="java" import="es.us.isa.ideas.controller.R.RInspector" %>
@@ -13,8 +14,9 @@
     <li id="plot"><a href="javascript:onClick('plots')">Plots</a></li>
   </ul>
 		<%
-		String[] variables=RInspector.getVariables(); 
-		String[] varValues= RInspector.getVariablesValues();
+                    RDelegate rdelegate=(RDelegate)session.getAttribute("RDelegate");
+                    String[] variables=rdelegate.getEnvironmentVariables();
+                    String[] varValues=rdelegate.getVariablesValues(variables);
 		
 		%>
 <style>

@@ -1,8 +1,13 @@
 
+<%@page import="es.us.isa.ideas.controller.R.RDelegate"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page language="java" import="java.util.*" %>
 <%@page language="java" import="es.us.isa.ideas.controller.R.RInspector" %>
 <%@ include file="inspectorManager.jsp" %>
+
+<%
+                    RDelegate rdelegate=(RDelegate)session.getAttribute("RDelegate");
+                    %>
 
 <div class="container">
 <style>
@@ -31,12 +36,12 @@ clear:both;
   
 	<div class="plots">
 			
-		<% String fileuri= RInspector.getFileUri(); %>
+		<% String fileuri= rdelegate.getFileUri(); %>
 	
 	<select id="selecPlot">
 	<%
 	
-	String[] graficas= RInspector.getPlots();
+	String[] graficas= rdelegate.getPlots();
 	String format="";/* <option value=\"default\">Last Graph</option>";*/
 	for(String graf:graficas){
 		format+="<option value=\""+graf+"\">"+graf+"</option>";
