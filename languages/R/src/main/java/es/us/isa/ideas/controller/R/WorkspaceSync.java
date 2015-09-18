@@ -101,11 +101,8 @@ public class WorkspaceSync {
 		}
 		
 	}*/
-	public static void deleteTemp(String temp){
-		try {
-			FileUtils.deleteDirectory(new File(temp));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public static boolean deleteTemp(String temp){
+		return	FileUtils.deleteQuietly(new File(temp));
+		
 	}
 }

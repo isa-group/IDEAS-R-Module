@@ -1,26 +1,26 @@
 {
-                id: "ideas-R-language",
-                extension: "r",
-                name: "R Language",
-                formats: [
+                "id": "ideas-R-language",
+                "extension": "r",
+                "name": "R Language",
+                "formats": [
                      {
-                         format: "R_format",
-                         editorModeId: "ace/mode/R",
-                         _editorModeURI: "mode-R.js",
-                         editorThemeId: "ace/theme/R",
-			 _editorThemeURI: "theme-R.js",                         
-                         checkLanguage: "true" 
+                         "format": "R_format",
+                         "editorModeId": "ace/mode/R",
+                         "_editorModeURI": "mode-R.js",
+                         "editorThemeId": "ace/theme/R",
+			 "_editorThemeURI": "theme-R.js",                         
+                         "checkLanguage": "true" 
                      }
                 ],
 
-                operations: [
+                "operations": [
 
                              {
-                                 id: "executeScript",
-                                 name: "Execute R script",
-                                 data: {},
-                                 _remoteExecution: "false",
-                                 action: "function(operationStructure) { 
+                                 "id": "executeScript",
+                                 "name": "Execute R script",
+                                 "data": {},
+                                 "_remoteExecution": "false",
+                                 "action": "function(operationStructure) { 
                                  var res;
                                  var fileUri= EditorManager.currentUri;
                                   var temp;
@@ -36,7 +36,7 @@
 											                    'type' : 'get', 
                     											'data' : operationStructure.id,
                     											'success' : function(result) {
-                                              CommandApi.doDocumentOperation('deleteTemp',operationStructure.data,fileUri,function(result){},true);
+                                              //CommandApi.doDocumentOperation('deleteTemp',operationStructure.data,fileUri,function(result){},true);
 
                                           },
                     				'onError' : function(result) {console.log('[ERROR] '+result);},
@@ -56,31 +56,31 @@
                                    	},true);
                                    		
                                    	}" ,
-                                 icon:"glyphicon glyphicon-play",
-                                 iconOnly:"true"
+                                 "icon":"glyphicon glyphicon-play",
+                                 "iconOnly":"true"
                                    	
                              },
                              {
-                                 id: "lint",
-                                 name: "Lint",
-                                 data: {},
-                                 _remoteExecution: "true",
-                                 action: "function(result) {}" ,
-                                 icon:"glyphicon glyphicon-ok",
-                                 iconOnly:"false"
+                                 "id": "lint",
+                                 "name": "Lint",
+                                 "data": {},
+                                 "_remoteExecution": "true",
+                                 "action": "function(result) {}" ,
+                                 "icon":"glyphicon glyphicon-ok",
+                                 "iconOnly":"false"
                              },
                              {
-                                 id: "endsession",
-                                 name: "End session",
-                                 data: {},
-                                 _remoteExecution: "true",
-                                 action: "function(result) {}" ,
-                                 icon:"glyphicon glyphicon-remove"
+                                 "id": "endsession",
+                                 "name": "End session",
+                                 "data": {},
+                                 "_remoteExecution": "true",
+                                 "action": "function(result) {}" ,
+                                 "icon":"glyphicon glyphicon-remove"
                                  
                              }
 
                              ],
 
-                inspectorLoader: "function(loader, format) {}" 
+                "inspectorLoader": "function(loader, format) {}" 
 
             }

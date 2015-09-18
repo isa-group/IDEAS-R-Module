@@ -39,6 +39,7 @@ public class RDelegate {
     public ByteArrayOutputStream baos;
     public Boolean isConnected = false;
     public Integer PID;
+	public List<String> tempsDirectories;
     Set<String> nonListedVariables=Sets.newHashSet("savegraphs","?");
 
     public RDelegate(Rsession s, PrintStream ps, ByteArrayOutputStream baos) {
@@ -53,7 +54,7 @@ public class RDelegate {
                 this.baos = new ByteArrayOutputStream();
                 this.ps = new PrintStream(this.baos);
                 this.s = Rsession.newInstanceTry(this.ps, c);
-                
+                tempsDirectories= new ArrayList<String>();
                 List<String> setup=new ArrayList<String>();
                 setup.add("option(error=function() NULL)");
                 setup.add("savegraphs <- local({i <- 1; function(){if(dev.cur()>1){filename<- paste('IDEAS-R-OutputFolder/SavedPlot',i,'.jpg',sep=\"\");file.create(filename);jpeg( file=filename ); i <<- i + 1; }}})");
@@ -113,7 +114,7 @@ public class RDelegate {
 //             killer.eval("tools::pskill("+ suicide+ ", tools::SIGKILL)");
 
                 killer.end();
-                killer.connection.shutdown();
+               // killer.connection.shutdown();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -132,6 +133,7 @@ public class RDelegate {
             this.baos.reset();
             this.s.close();
             //this.s.end();
+            deleteTemp();
             res.setMessage("Session correctly ended.");
             res.setStatus(Status.OK);
 
@@ -159,6 +161,7 @@ public class RDelegate {
         }
         WorkspaceSync ws = new WorkspaceSync(this.s);
         tempD = ws.setTempDirectory();
+        this.tempsDirectories.add(tempD);
 
         if (tempD != null) {
             response.setMessage("executing R script");
@@ -293,8 +296,16 @@ public class RDelegate {
 
     public AppResponse deleteTemp() {
         AppResponse response = new AppResponse();
-        //WorkspaceSync.deleteTemp(this.tempD);
+        boolean noerror=true;
+        for(String tem:this.tempsDirectories){
+        	noerror=noerror&&WorkspaceSync.deleteTemp(tem);
+        }
+        if(noerror){
         response.setStatus(Status.OK);
+       
+        }else{
+        	response.setStatus(Status.ERROR); 	
+        }
         response.setMessage("Execution finished");
         return response;
     }
@@ -422,6 +433,9 @@ public class RDelegate {
 
         return sp[0] + "/" + sp[1];
     }
+    public List<String> getTempsDirectories() {
+		return tempsDirectories;
+	}
  
     public boolean isDataFrame(String variable) {
         return isDataFrame(getSession(), variable);
