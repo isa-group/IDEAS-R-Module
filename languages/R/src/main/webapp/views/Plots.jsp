@@ -36,18 +36,36 @@ clear:both;
   
 	<div class="plots">
 			
-		<% String fileuri= rdelegate.getFileUri(); %>
+		<% 
+		String fileuri;
+		try{
+		 fileuri= rdelegate.getFileUri(); 
+		}catch(NullPointerException e){
+			fileuri= "";
+		}
+		%>
 	
-	<select id="selecPlot">
+	<select id="selecPlot" onchange="canvasPlot('<%=fileuri%>')">
 	<%
-	
-	String[] graficas= rdelegate.getPlots();
+	String[] graficas;
+	try{
+	graficas= rdelegate.getPlots();
+	}catch(NullPointerException e){
+		graficas = new String[]{};
+	}
 	String format="";/* <option value=\"default\">Last Graph</option>";*/
+	
 	for(String graf:graficas){
 		format+="<option value=\""+graf+"\">"+graf+"</option>";
 	}
 	%>
 	<%=format %>
+	
+	<script type="text/javascript">
+	
+	
+  	chargeImages(<%=fileuri%>);
+  </script>
 	 </select>
 	 <button onclick="canvasPlot('<%=fileuri%>')"> Graphic!</button>
 	<canvas id="canvasPlot" width="auto" height="auto">
@@ -59,7 +77,7 @@ clear:both;
 	 <div id="inspectorFooter">
 	 <!-- Refresh Button -->
 	 <h5>Your plots are also in you IDEAS-R-OutputFolder, press f5 to see them!</h5>
-	 <h6>If is the first time the plot is showed before, you should click twice the "Graphic!" button.</h6>
+	 <h6>If is the first time the plot is showed, you may need to click the "Graphic!" button.</h6>
 	 <div class="buttons" id="buttons">
     	<button type="button" onclick="refresh('plots')" class="btn btn-default btn-sm">
           <span class="glyphicon glyphicon-refresh"></span> Refresh

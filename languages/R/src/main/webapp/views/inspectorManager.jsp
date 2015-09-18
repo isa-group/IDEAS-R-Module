@@ -26,6 +26,7 @@
 						  'data':{},
 						  'success':function(result){
 						          var jsp= result.context;
+						          $('#editorInspectorLoader').removeAttr("style");
 						          $('#editorInspectorLoader').load(jsp);
 						                            },
 						  'onError':function(result){console.log([ERROR]+result.context);},
@@ -53,6 +54,20 @@
 				canvas.width=image.width;
 				var con=canvas.getContext("2d");
 				con.drawImage(image,10,10);
+				/*$.ajax(url,{
+					'type' : 'get',
+					'success' : function(result){
+						image=result;
+						canvas.height=image.height;
+						canvas.width=image.width;
+						var con=canvas.getContext("2d");
+						con.drawImage(image,10,10);
+						
+					},
+					'onError' : function(result){},
+					'async' : true
+				});*/
+				
 			}
 			function expand(TrId){
 				var id=TrId.substring(1); //quitarle la v.
@@ -63,6 +78,22 @@
 				   v.hide(); 
 				  }
 				
+			}
+			function chargeImages(fileUri){
+				var graficas= $('#selectPlot').children().text().split(" ");
+				//window.alert(graficas);
+				var image= new Image();
+				var canvas= document.getElementById("canvasPlot");
+				
+				for(var i=graficas.length;i>0;i--){
+					var url='/file/get/'+fileUri+'/IDEAS-R-OutputFolder/'+graficas[i];
+					image.src=url;
+					canvas.height=image.height;
+					canvas.width=image.width;
+					var con=canvas.getContext("2d");
+					con.drawImage(image,10,10);	
+					
+				}	
 			}
 			
 			

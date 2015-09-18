@@ -16,6 +16,7 @@ var inspector={
 					  'data':{},
 					  'success':function(result){
 					          var jsp= result.context;
+					          $('#editorInspectorLoader').removeAttr('style');
 					          $('#editorInspectorLoader').load(jsp)
 					                            },
 					  'onError':function(result){console.log([ERROR]+result.context);},
