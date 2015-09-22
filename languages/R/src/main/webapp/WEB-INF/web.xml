@@ -21,4 +21,12 @@
                       org.springframework.web.context.ContextLoaderListener
                 </listener-class>
   </listener>
+  <listener>
+    <listener-class>
+                      es.us.isa.ideas.controller.R.util.RSessionListener
+                </listener-class>
+  </listener>
+  <listener>
+     <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+ </listener>
 </web-app>

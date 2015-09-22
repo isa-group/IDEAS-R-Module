@@ -1,0 +1,14 @@
+savegraphs <- local({i <- 1; 
+    function(){
+      if(dev.cur()>1){
+      filename<- paste('/IDEAS-R-OutputFolder/SavedPlot',i,'.jpeg',sep="")
+      file.create(filename)
+        jpeg( file=filename )
+       
+        i <<- i + 1
+      }
+    }
+})
+
+setHook('before.plot.new', savegraphs )
+setHook('before.grid.newpage', savegraphs )

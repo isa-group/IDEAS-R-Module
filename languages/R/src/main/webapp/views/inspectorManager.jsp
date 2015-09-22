@@ -3,7 +3,7 @@
 <%@page language="java" import="es.us.isa.ideas.controller.R.RInspector" %>
 
 <script type="text/javascript">
-
+	
 			function onClick(tabName){
 				if(tabName=='environments'){
 					$('#plot').toggleClass('active')
@@ -26,6 +26,7 @@
 						  'data':{},
 						  'success':function(result){
 						          var jsp= result.context;
+						          $('#editorInspectorLoader').removeAttr("style");
 						          $('#editorInspectorLoader').load(jsp);
 						                            },
 						  'onError':function(result){console.log([ERROR]+result.context);},
@@ -38,7 +39,34 @@
 				//de momento no va a haber nada especial en el refresh
 				onClick(tabName);
 			}
-			function canvasPlot(){
+			function canvasPlot(fileUri){
+				var canvas= document.getElementById("canvasPlot");
+				var img=$('#selecPlot').val();
+				var url='/file/get/'+fileUri+'/IDEAS-R-OutputFolder/'+img;
+				//window.alert(fileUri);
+				/*$.get(url, function(image){
+					var con=canvas.getContext("2d");
+					con.drawImage(image,100,100);
+				});*/
+				var image= new Image();
+				image.src=url;
+				canvas.height=image.height;
+				canvas.width=image.width;
+				var con=canvas.getContext("2d");
+				con.drawImage(image,10,10);
+				/*$.ajax(url,{
+					'type' : 'get',
+					'success' : function(result){
+						image=result;
+						canvas.height=image.height;
+						canvas.width=image.width;
+						var con=canvas.getContext("2d");
+						con.drawImage(image,10,10);
+						
+					},
+					'onError' : function(result){},
+					'async' : true
+				});*/
 				
 			}
 			function expand(TrId){
@@ -51,5 +79,23 @@
 				  }
 				
 			}
+			function chargeImages(fileUri){
+				var graficas= $('#selectPlot').children().text().split(" ");
+				//window.alert(graficas);
+				var image= new Image();
+				var canvas= document.getElementById("canvasPlot");
+				
+				for(var i=graficas.length;i>0;i--){
+					var url='/file/get/'+fileUri+'/IDEAS-R-OutputFolder/'+graficas[i];
+					image.src=url;
+					canvas.height=image.height;
+					canvas.width=image.width;
+					var con=canvas.getContext("2d");
+					con.drawImage(image,10,10);	
+					
+				}	
+			}
+			
+			
 	
  </script>
