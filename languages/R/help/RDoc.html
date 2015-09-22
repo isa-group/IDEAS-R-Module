@@ -18,6 +18,14 @@
 
 </head>
 <body>
+	<style type="text/css">
+		#BigImage{
+			width: 90%;
+			height: auto;
+		}
+
+
+	</style>
 
 	<div class="container">
 		<!--
@@ -38,7 +46,7 @@
 			<h3><a class="collapsed" aria-expanded="false" data-toggle="collapse" aria-controls="Rintro" href="/RDoc.html#Rintro">Introduction to R in IDEAS Studio</a></h3>
 			<div id="Rintro" class="collapse">
 				<p>The R module is designed for executing R scripts, being able to access the data files located into the Project folder, and show the plots generated. </p>
-				<img src="img/R/FullRModule.PNG"><!-- captura genérica del módulo de R funcionando (con los datos abiertos)-->
+				<img id="BigImage" src="img/R/FullRModule.PNG"><!-- captura genérica del módulo de R funcionando (con los datos abiertos)-->
 				<p>To create a new R file from scratch go to:</p>
 				<img src="img/R/CreateFile.PNG"><!-- captura de como se crea un nuevo .r-->
 				<p>now the R code is ready to be written into de editor frame</p>
@@ -53,8 +61,13 @@
 				<p>The output will be showed in the console frame:</p>
 				<img src="img/R/ExecuteOutput.PNG"><!-- captura de la consola cuando se ejecuta un script-->
 				<p>Please have in count that is necessary to have an output command (print()) to have something showed in the console.</p>
-				<p>The execution is made as if the working directory of R were in the Project folder, so the paths used to access data saved in other files don't require the inclusion of the Project name.</p>
+				<p>The execution is made as if the working directory of R were in the Project folder, so the paths used to access data saved in other files don't require the inclusion of the Project name.
+					So if the Workspace name is "X" and the Project name is "Y" and you want to access a file located in a folder inside the Project folder called "Try R". Then the Workspace name and the project name are not necessary to be included in the path:</p>
 				<img src="img/R/Path.PNG"><!-- captura de una ruta correcta -->
+				<p>If the file is directly into the project folder, then only the name of the file (with the extension) is required.</p><br>
+				<p>The working directory for R will be a copy made in a temporary folder in the Project folder, not the Project folder itself so the files deletions can't be made by the scripts executed.</p>
+
+
 			</div>
 
 			<h3><a class="collapsed" aria-expanded="false" data-toggle="collapse" aria-controls="End" href="/RDoc.html#End">Ending the session</a></h3>
