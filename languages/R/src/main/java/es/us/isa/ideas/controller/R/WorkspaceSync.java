@@ -11,10 +11,10 @@ import org.math.R.Rsession;
 
 public class WorkspaceSync {
 
-	public static Rsession s;
+	public Rsession s;
 	
 	public WorkspaceSync(Rsession s) {
-		WorkspaceSync.s=s;
+		this.s=s;
 		
 	}
 
