@@ -23,12 +23,24 @@ import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REXPNull;
 
 public class RDelegate {
-
+    public final static String[] PLOT_EXTENSIONS  ={".jgp",".png",".gif",".svg",".bmp",".tiff"};
     public final static String EXECUTE_SCRIPT = "executeScript";
     public final static String EXECUTE_SCRIPT2 = "executeScript2";
     public final static String LINT = "lint";
     public final static String END_SESSION = "endsession";
-    public static final Object DELETE_TEMP = "deleteTemp";
+    public final static String DELETE_TEMP = "deleteTemp";
+    public final static String SAVE_GRAPH_FUNCTION="savegraphs <- local({"
+                                                       + "i <- 1; "
+                                                       + "function(){"
+                                                       + "    if(dev.interactive(orNone = TRUE)){"
+                                                       + "      filename<- paste('IDEAS-R-OutputFolder/SavedPlot',i,'.jpg',sep=\"\");"
+                                                       + "      file.create(filename);"
+                                                       + "      jpeg( file=filename,width=plotWidth, height = plotHeight); "
+                                                       + "      i <<- i + 1;"
+                                                       + "      dev.off(); "
+                                                       + "    }"
+                                                       + "}"
+                                                       + "})";
     public String tempD;
     String host = "R://localhost:6311";
     public String uri;
@@ -53,7 +65,11 @@ public class RDelegate {
         tempsDirectories = new ArrayList<String>();
         List<String> setup = new ArrayList<String>();
         setup.add("option(error=function() NULL)");
-        setup.add("savegraphs <- local({i <- 1; function(){if(dev.cur()>1){filename<- paste('IDEAS-R-OutputFolder/SavedPlot',i,'.jpg',sep=\"\");file.create(filename);jpeg( file=filename ); i <<- i + 1; }}})");
+        // Set Default Plot Size
+        setup.add("plotWidth <- 600");
+        setup.add("plotHeight <- 600");
+        // Create hooks for graphics saving:
+        setup.add(SAVE_GRAPH_FUNCTION);
         setup.add("setHook('before.plot.new', savegraphs )");
         setup.add("setHook('before.grid.newpage', savegraphs )");
         for (String command : setup) {
@@ -324,10 +340,11 @@ public class RDelegate {
         List<String> res = Lists.newArrayList();
         try {
             File t = new File(temp);
-            File o = t.toPath().resolve("IDEAS-R-OutputFolder").toFile();
+            File o = t.toPath().resolve(WorkspaceSync.OUTPUT_FOLDER).toFile();
 
             for (String f : o.list()) {
-                if (f.contains(".jpg")) {
+                for(String extension:PLOT_EXTENSIONS)
+                if (f.contains(extension)) {
                     String[] spl = f.split("/");
                     res.add(spl[spl.length - 1]);
                 }

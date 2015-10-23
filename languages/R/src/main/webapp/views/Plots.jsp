@@ -1,7 +1,7 @@
-<%@page import="es.us.isa.ideas.controller.R.RDelegate"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page language="java" import="java.util.*" %>
 <%@page language="java" import="es.us.isa.ideas.controller.R.RInspector" %>
+<%@page import="es.us.isa.ideas.controller.R.RDelegate"%>
 <%@ include file="inspectorManager.jsp" %>
 <%
     RDelegate rdelegate = (RDelegate) session.getAttribute("RDelegate");
