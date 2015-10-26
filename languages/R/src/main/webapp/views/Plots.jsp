@@ -2,7 +2,7 @@
 <%@page language="java" import="java.util.*" %>
 <%@page language="java" import="es.us.isa.ideas.controller.R.RInspector" %>
 <%@page import="es.us.isa.ideas.controller.R.RDelegate"%>
-<%@ include file="inspectorManager.jsp" %>
+
 <%
     RDelegate rdelegate = (RDelegate) session.getAttribute("RDelegate");
     String fileuri;
