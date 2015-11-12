@@ -1,3 +1,3 @@
 # IDEAS-R-Module
-Modulo de R para IDEAS
+An IDEAS module for the R statistical computing language.
 
