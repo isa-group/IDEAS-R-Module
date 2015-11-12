@@ -39,8 +39,8 @@ public class RLanguageController extends BaseLanguageController {
     public AppResponse executeOperation(String id, String content, String fileUri, HttpServletRequest request) {
         RDelegate RD = (RDelegate) request.getSession().getAttribute("RDelegate");
         if (RD == null) {
-            request.setAttribute("IDEAS-R-OutputFolder", "output");
-            RD = new RDelegate(null, null, null);
+            request.setAttribute(WorkspaceSync.OUTPUT_FOLDER, "output");
+            RD = new RDelegate();
             request.getSession().setAttribute("RDelegate", RD);
         }
 
@@ -49,12 +49,11 @@ public class RLanguageController extends BaseLanguageController {
         AppResponse response;
 
         if (id.equals(RDelegate.EXECUTE_SCRIPT)) {
-            response = RD.executeScript(content, fileUri);
+            response = RD.prepareScriptExecution(content, fileUri);
         } else if (id.equals(RDelegate.EXECUTE_SCRIPT2)) {
-            response = RD.executeScript2(content, fileUri);
+            response = RD.executeScript(content, fileUri);
         } else if (id.equals(RDelegate.DELETE_TEMP)) {
             response = RD.deleteTemp();
-
         } else if (id.equals(RDelegate.LINT)) {
             response = RD.lintScript(content, fileUri);
         } else if (id.equals(RDelegate.END_SESSION)) {

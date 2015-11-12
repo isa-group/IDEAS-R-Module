@@ -23,28 +23,28 @@ import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REXPNull;
 
 public class RDelegate {
-    public final static String[] PLOT_EXTENSIONS  ={".jgp",".png",".gif",".svg",".bmp",".tiff"};
+    public final static String[] PLOT_EXTENSIONS  ={".jpg",".png",".gif",".svg",".bmp",".tiff"};
     public final static String EXECUTE_SCRIPT = "executeScript";
     public final static String EXECUTE_SCRIPT2 = "executeScript2";
     public final static String LINT = "lint";
     public final static String END_SESSION = "endsession";
     public final static String DELETE_TEMP = "deleteTemp";
     public final static String SAVE_GRAPH_FUNCTION="savegraphs <- local({"
-                                                       + "i <- 1; "
-                                                       + "function(){"
-                                                       + "    if(dev.interactive(orNone = TRUE)){"
-                                                       + "      filename<- paste('IDEAS-R-OutputFolder/SavedPlot',i,'.jpg',sep=\"\");"
-                                                       + "      file.create(filename);"
-                                                       + "      jpeg( file=filename,width=plotWidth, height = plotHeight); "
-                                                       + "      i <<- i + 1;"
-                                                       + "      dev.off(); "
-                                                       + "    }"
+                                                       + "i <- 1; \n"
+                                                       + "function(){\n"
+                                                       + "    if(dev.cur()>1 && dev.interactive(orNone = TRUE)){\n"
+                                                       + "      filename<- paste('"+WorkspaceSync.OUTPUT_FOLDER+"/SavedPlot',i,'.jpg',sep='')\n"
+                                                       + "      file.create(filename)\n"
+                                                       + "      dev.copy(jpeg,filename)\n"
+                                                       + "      i <<- i + 1\n"
+                                                       + "      dev.off()\n"
+                                                       + "    }\n"
                                                        + "}"
                                                        + "})";
     public String tempD;
     String host = "R://localhost:6311";
     public String uri;
-    public Rsession s;
+    public Rsession session;
     public String[] plots;
     public PrintStream ps;
     public ByteArrayOutputStream baos;
@@ -61,10 +61,10 @@ public class RDelegate {
         RserverConf c = RserverConf.parse(host);
         this.baos = new ByteArrayOutputStream();
         this.ps = new PrintStream(this.baos);
-        this.s = Rsession.newInstanceTry(this.ps, c);
+        this.session = Rsession.newInstanceTry(this.ps, c);
         tempsDirectories = new ArrayList<String>();
         List<String> setup = new ArrayList<String>();
-        setup.add("option(error=function() NULL)");
+        setup.add("option(error=function(){})");
         // Set Default Plot Size
         setup.add("plotWidth <- 600");
         setup.add("plotHeight <- 600");
@@ -73,53 +73,15 @@ public class RDelegate {
         setup.add("setHook('before.plot.new', savegraphs )");
         setup.add("setHook('before.grid.newpage', savegraphs )");
         for (String command : setup) {
-            this.s.eval(command);
+            this.session.eval(command);
         }
         try {
-            PID = s.eval("Sys.getpid()").asInteger();
-
+            PID = session.eval("Sys.getpid()").asInteger();
         } catch (Exception e) {
             e.printStackTrace();
             PID = null;
         }
-    }
-
-    public RDelegate(Rsession s, PrintStream ps, ByteArrayOutputStream baos) {
-        this.s = s;
-        this.ps = ps;
-        this.baos = baos;
-
-    }
-    /* private String readFile(File file) {
-     String res=""; 
-     File archivo = file;
-     FileReader fr = null;
-     BufferedReader br = null;
-    	 
-     try {
-     fr = new FileReader (archivo);
-     br = new BufferedReader(fr);
-    	 
-     // Lectura del fichero
-     String linea;
-     while((linea=br.readLine())!=null)
-     res+=linea;
-     }
-     catch(Exception e){
-     e.printStackTrace();
-     }finally{  	         
-     try{                    
-     if( null != fr ){   
-     fr.close();     
-     }                  
-     }catch (Exception e2){ 
-     e2.printStackTrace();
-     }
-     }
-    	   
-     return res;
-     }*/
-
+    }        
     public AppResponse endSession() {
         AppResponse res;
         if (PID != null && !PID.equals(-1)) {
@@ -134,7 +96,6 @@ public class RDelegate {
             killer.eval("tools::pskill(" + this.PID + ")");
             killer.eval("tools::pskill(" + this.PID + ", tools::SIGKILL)");
             killer.end();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -144,9 +105,9 @@ public class RDelegate {
     public AppResponse closeSession() {
         AppResponse res = new AppResponse();
         try {
-            this.s.rmAll();
+            this.session.rmAll();
             this.baos.reset();
-            this.s.close();
+            this.session.close();
             deleteTemp();
             res.setMessage("Session correctly ended.");
             res.setStatus(Status.OK);
@@ -158,15 +119,15 @@ public class RDelegate {
         return res;
     }
 
-    public AppResponse executeScript(String content, String fileUri) {
+    public AppResponse prepareScriptExecution(String content, String fileUri) {
         AppResponse response = constructBaseResponse(fileUri);
         uri = fileUri;
         //Create the Temporary Directory
-        if (!tryConnection(this.s)) {
+        if (!tryConnection(this.session)) {
             closeSession();
             initialize();
         }
-        WorkspaceSync ws = new WorkspaceSync(this.s);
+        WorkspaceSync ws = new WorkspaceSync(this.session);
         tempD = ws.setTempDirectory();
         this.tempsDirectories.add(tempD);
 
@@ -181,13 +142,13 @@ public class RDelegate {
         return response;
     }
 
-    public AppResponse executeScript2(String content, String fileUri) {
+    public AppResponse executeScript(String content, String fileUri) {
         AppResponse response = constructBaseResponse(fileUri);
         try {
             baos.reset();
-            s.eval(content);
+            session.eval(content);
             String f = baos.toString("UTF-8");
-            s.eval("graphics.off()");
+            session.eval("graphics.off()");
             plots = getPlots(tempD);
             String htmlMessage = "<pre>" + cleanMessage(f, content) + "</pre>";
             response.setHtmlMessage(htmlMessage);
@@ -202,19 +163,17 @@ public class RDelegate {
 
     public AppResponse lintScript(String content, String fileUri) {
         AppResponse response = constructBaseResponse(fileUri);
-
         try {
-
             File f = savecontentToTempFile(content);
 
-            if (!s.isPackageInstalled("lintr", "0.2.0")) {
-                s.installPackage("lintr", true);
+            if (!session.isPackageInstalled("lintr", "0.2.0")) {
+                session.installPackage("lintr", true);
             }
-            if (!s.isPackageLoaded("lintr")) {
-                s.loadPackage("lintr");
+            if (!session.isPackageLoaded("lintr")) {
+                session.loadPackage("lintr");
             }
             String command = "lintr::lint(\"" + f.getAbsolutePath().replace("\\", "\\\\\\\\") + "\")";
-            REXPGenericVector result = (REXPGenericVector) s.eval(command);
+            REXPGenericVector result = (REXPGenericVector) session.eval(command);
             response.setAnnotations(ErrorBuilder.buildErrorStructure(result.asList()));
             if (result.length() == 0) {
                 response.setStatus(Status.OK);
@@ -308,11 +267,11 @@ public class RDelegate {
     }
 
     public Rsession getSession() {
-        return s;
+        return session;
     }
 
     public String[] getEnvironmentVariables() {
-        Set<String> vars = Sets.newHashSet(s.ls());
+        Set<String> vars = Sets.newHashSet(session.ls());
         vars.removeAll(nonListedVariables);
         return vars.toArray(new String[0]);
     }
@@ -419,11 +378,11 @@ public class RDelegate {
         String alternativeNEWLINE = "NEWLINE!!";
         result.append("<table class=\"table table-hover extendable\" id=\"value" + index + "\">");
         // EXECUTE R CODE TO GET THE DATAFRAME AS CSV STRING:
-        s.silentlyEval("hiddenCon <- textConnection(\"hiddenCSVOutput\", \"w\")");
-        s.silentlyEval("write.csv(file=hiddenCon," + variable + ",row.names=F,eol = \"" + alternativeNEWLINE + "\")");
-        s.silentlyEval("close(hiddenCon)");
+        session.silentlyEval("hiddenCon <- textConnection(\"hiddenCSVOutput\", \"w\")");
+        session.silentlyEval("write.csv(file=hiddenCon," + variable + ",row.names=F,eol = \"" + alternativeNEWLINE + "\")");
+        session.silentlyEval("close(hiddenCon)");
         //s.silentlyEval("hiddenCSVOutput <- capture.output("+variable+", stdout(), row.names=F)");
-        String csv = s.asString("hiddenCSVOutput");
+        String csv = session.asString("hiddenCSVOutput");
         String[] rows = csv.split(alternativeNEWLINE);
         for (int i = 0; i < rows.length; i++) {
             String row = rows[i].trim();
@@ -452,13 +411,13 @@ public class RDelegate {
         }
         result.append("</table>");
         // REMOVE THE AUXILIARY VARIABLES FROM R ENVIRONMENT
-        s.silentlyEval("remove (\"hiddenCSVOutput\")");
-        s.silentlyEval("remove (\"hiddenCon\")");
+        session.silentlyEval("remove (\"hiddenCSVOutput\")");
+        session.silentlyEval("remove (\"hiddenCon\")");
         return result.toString();
     }
 
     private String variableAsHTML(String variable, int index) {
-        String st = s.asHTML("print(" + variable + ")");
+        String st = session.asHTML("print(" + variable + ")");
         st = st.replace("<html>", "");
         st.replace("</html>", "");
         st = st.substring(0, (st.length() / 2) - 1);

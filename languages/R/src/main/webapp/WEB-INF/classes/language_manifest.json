@@ -36,19 +36,27 @@
 											                    'type' : 'get', 
                     											'data' : operationStructure.id,
                     											'success' : function(result) {
-                                              //CommandApi.doDocumentOperation('deleteTemp',operationStructure.data,fileUri,function(result){},true);
-
+                                              //CommandApi.doDocumentOperation('deleteTemp',operationStructure.data,fileUri,function(result){},true);                                              
+                                              FileApi.loadWorkspace(WorkspaceManager.getSelectedWorkspace(), function (ts) {                                                                           
+                                                for(i=0;i<$('#projectsTree').dynatree('getRoot').childList.length;i++)
+                                                    $('#projectsTree').dynatree('getRoot').childList[i].remove();
+                                                $('#projectsTree').dynatree('getRoot'.addChild(ts);
+                                                console.log(ts);
+                                                $('.indented.apl_editor_'+ WorkspaceManager.getSelectedWorkspace())
+                                                    .parent().addClass('active');                
+                                                 $('.dynatree-expander').click();
+                                              });
                                           },
                     				'onError' : function(result) {console.log('[ERROR] '+result);},
                                     'async' : true,});
                                     
                                     $.ajax('/ideas-R-language/inspector/environment',{
-																					  'type':'post',
-																					  'data':{},
-																					  'success':function(result){$('#editorInspectorLoader').load(result.context);},
-																					  'onError':function(result){console.log([ERROR]+result.context);},
-																					  'async':true,
-																					  });
+					'type':'post',
+					'data':{},
+					'success':function(result){$('#editorInspectorLoader').load(result.context);},
+					'onError':function(result){console.log([ERROR]+result.context);},
+					'async':true,
+                                    });
                                     
                                    	},true);},
                                    	'onError' : function(result) {console.log('[ERROR] '+result);},
