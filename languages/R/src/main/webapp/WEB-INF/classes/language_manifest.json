@@ -20,50 +20,66 @@
                                  "name": "Execute R script",
                                  "data": {},
                                  "_remoteExecution": "false",
-                                 "action": "function(operationStructure) { 
-                                 var res;
-                                 var fileUri= EditorManager.currentUri;
-                                  var temp;
-                                  CommandApi.doDocumentOperation(operationStructure.id,operationStructure.data,fileUri, function(result){
-                                  	  temp=result.context;
-                                  	 $.ajax('file/copyProjectToTemp?temDirectory='+temp+'&fileUri='+fileUri, {
-                                  	 'type' : 'get', 
-                                  	 'data' : {},
-                                   	'success' : function(result) {
-                                   		CommandApi.doDocumentOperation('executeScript2',operationStructure.data,fileUri, function(result){
-                                   		
-                                   		$.ajax('file/copyTemptoProject?temDirectory='+temp+'&fileUri='+fileUri, {
-											                    'type' : 'get', 
-                    											'data' : operationStructure.id,
-                    											'success' : function(result) {
-                                              //CommandApi.doDocumentOperation('deleteTemp',operationStructure.data,fileUri,function(result){},true);                                              
-                                              FileApi.loadWorkspace(WorkspaceManager.getSelectedWorkspace(), function (ts) {                                                                           
-                                                for(i=0;i<$('#projectsTree').dynatree('getRoot').childList.length;i++)
-                                                    $('#projectsTree').dynatree('getRoot').childList[i].remove();
-                                                $('#projectsTree').dynatree('getRoot'.addChild(ts);
-                                                console.log(ts);
-                                                $('.indented.apl_editor_'+ WorkspaceManager.getSelectedWorkspace())
-                                                    .parent().addClass('active');                
-                                                 $('.dynatree-expander').click();
-                                              });
-                                          },
-                    				'onError' : function(result) {console.log('[ERROR] '+result);},
-                                    'async' : true,});
-                                    
-                                    $.ajax('/ideas-R-language/inspector/environment',{
-					'type':'post',
-					'data':{},
-					'success':function(result){$('#editorInspectorLoader').load(result.context);},
-					'onError':function(result){console.log([ERROR]+result.context);},
-					'async':true,
-                                    });
-                                    
-                                   	},true);},
-                                   	'onError' : function(result) {console.log('[ERROR] '+result);},
-                                   	'async' : true,});
-                                   	},true);
-                                   		
-                                   	}" ,
+                                 "action": "
+function (operationStructure) {
+    var res;
+    var fileUri = EditorManager.currentUri;
+    var temp;
+    CommandApi.doDocumentOperation(operationStructure.id, operationStructure.data, fileUri, function (result) {
+        temp = result.context;
+        $.ajax('file/copyProjectToTemp?temDirectory=' + temp + '&fileUri=' + fileUri, {
+            'type': 'get',
+                'data': {},
+                'success': function (result) {
+                CommandApi.doDocumentOperation('executeScript2', operationStructure.data, fileUri, function (result) {
+
+                    $.ajax('file/copyTemptoProject?temDirectory=' + temp + '&fileUri=' + fileUri, {
+                        'type': 'get',
+                            'data': operationStructure.id,
+                            'success': function (result) {
+                            //CommandApi.doDocumentOperation('deleteTemp',operationStructure.data,fileUri,function(result){},true);                                              
+                            FileApi.loadWorkspace(WorkspaceManager.getSelectedWorkspace(), function (ts) {
+                                var j=$('#projectsTree').dynatree('getRoot').childList.length;                                
+                                for (i = 0; i < j - 1; i++){
+                                    $('#projectsTree').dynatree('getRoot').childList[i].remove();
+                                }                                
+                                var node=$('#projectsTree').dynatree('getRoot').childList[0];                                
+                                $('#projectsTree').dynatree('getRoot').addChild(ts);
+                                node.remove();
+                                console.log(ts);
+                                $('.indented.apl_editor_' + WorkspaceManager.getSelectedWorkspace())
+                                    .parent().addClass('active');
+                                $('.dynatree-expander').click();
+                            });
+                        },
+                            'onError': function (result) {
+                            console.log('[ERROR] ' + result);
+                        },
+                            'async': true
+                    });
+
+                    $.ajax('/ideas-R-language/inspector/environment', {
+                        'type': 'post',
+                            'data': {},
+                            'success': function (result) {
+                            $('#editorInspectorLoader').load(result.context);
+                        },
+                            'onError': function (result) {
+                            console.log([ERROR] + result.context);
+                        },
+                            'async': true
+                    });
+
+                }, true);
+            },
+                'onError': function (result) {
+                console.log('[ERROR] ' + result);
+            },
+                'async': true
+        });
+    }, true);
+
+}" ,
                                  "icon":"glyphicon glyphicon-play",
                                  "iconOnly":"true"
                                    	

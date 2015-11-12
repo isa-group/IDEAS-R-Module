@@ -23,7 +23,7 @@ import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REXPNull;
 
 public class RDelegate {
-    public final static String[] PLOT_EXTENSIONS  ={".jpg",".png",".gif",".svg",".bmp",".tiff"};
+    public final static String[] PLOT_EXTENSIONS  ={".jpg",".jpeg",".png",".gif",".svg",".bmp",".tiff"};
     public final static String EXECUTE_SCRIPT = "executeScript";
     public final static String EXECUTE_SCRIPT2 = "executeScript2";
     public final static String LINT = "lint";
@@ -32,18 +32,6 @@ public class RDelegate {
     public final static String DEFAULT_R_REPO="local({r <- getOption(\"repos\");\n" +
                                                 "       r[\"CRAN\"] <- \"http://cran.us.r-project.org\"; \n" +
                                                 "       options(repos=r)})";
-    public final static String SAVE_GRAPH_FUNCTION="savegraphs <- local({"
-                                                       + "i <- 1; \n"
-                                                       + "function(){\n"
-                                                       + "    if(dev.cur()>1 && dev.interactive(orNone = TRUE)){\n"
-                                                       + "      filename<- paste('"+WorkspaceSync.OUTPUT_FOLDER+"/SavedPlot',i,'.jpg',sep='')\n"
-                                                       + "      file.create(filename)\n"
-                                                       + "      dev.copy(jpeg,filename)\n"
-                                                       + "      i <<- i + 1\n"
-                                                       + "      dev.off()\n"
-                                                       + "    }\n"
-                                                       + "}"
-                                                       + "})";
     public String tempD;
     String host = "R://localhost:6311";
     public String uri;
@@ -66,16 +54,8 @@ public class RDelegate {
         this.ps = new PrintStream(this.baos);
         this.session = Rsession.newInstanceTry(this.ps, c);
         tempsDirectories = new ArrayList<String>();
-        List<String> setup = new ArrayList<String>();
-        setup.add("option(error=function(){})");
-        // Set Default Plot Size
-        setup.add("plotWidth <- 600");
-        setup.add("plotHeight <- 600");
-        // Create hooks for graphics saving:
-        setup.add(DEFAULT_R_REPO);
-        setup.add(SAVE_GRAPH_FUNCTION);
-        setup.add("setHook('before.plot.new', savegraphs )");
-        setup.add("setHook('before.grid.newpage', savegraphs )");
+        List<String> setup = new ArrayList<String>();                
+        setup.add(DEFAULT_R_REPO);                
         for (String command : setup) {
             this.session.eval(command);
         }
@@ -150,7 +130,8 @@ public class RDelegate {
         AppResponse response = constructBaseResponse(fileUri);
         try {
             baos.reset();
-            session.eval(content);
+            session.eval("jpeg(filename ='"+WorkspaceSync.OUTPUT_FOLDER+"/Rplot%03d.jpeg')");
+            session.eval(content);            
             String f = baos.toString("UTF-8");
             session.eval("graphics.off()");
             plots = getPlots(tempD);
@@ -213,18 +194,7 @@ public class RDelegate {
             bw.write(content);
         }
         return temp;
-    }
-    /*private File savecontentToTempFile2(String content) throws IOException {        
-     UUID uuid=UUID.randomUUID();
-     //create a temp file
-     File temp = File.createTempFile(uuid.toString(), ".R");
-
-     try ( //write it
-     BufferedWriter bw = new BufferedWriter(new FileWriter(temp))) {
-     bw.write(content);
-     }
-     return temp;            
-     }*/
+    }    
 
     private String cleanMessage(String f, String content) {
         String f2 = f.replace("[eval] " + content, "");
