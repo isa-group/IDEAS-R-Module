@@ -29,6 +29,9 @@ public class RDelegate {
     public final static String LINT = "lint";
     public final static String END_SESSION = "endsession";
     public final static String DELETE_TEMP = "deleteTemp";
+    public final static String DEFAULT_R_REPO="local({r <- getOption(\"repos\");\n" +
+                                                "       r[\"CRAN\"] <- \"http://cran.us.r-project.org\"; \n" +
+                                                "       options(repos=r)})";
     public final static String SAVE_GRAPH_FUNCTION="savegraphs <- local({"
                                                        + "i <- 1; \n"
                                                        + "function(){\n"
@@ -69,6 +72,7 @@ public class RDelegate {
         setup.add("plotWidth <- 600");
         setup.add("plotHeight <- 600");
         // Create hooks for graphics saving:
+        setup.add(DEFAULT_R_REPO);
         setup.add(SAVE_GRAPH_FUNCTION);
         setup.add("setHook('before.plot.new', savegraphs )");
         setup.add("setHook('before.grid.newpage', savegraphs )");
