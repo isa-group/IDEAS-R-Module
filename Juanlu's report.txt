@@ -1,2 +1,0 @@
--ScatterPlot3D: error debido a que getSeries3D() no devuelve una lista de Serie3D sino un Serie3 (provoca un casque sintáctico en el Unmarshaller y en el coomputing engine).
--Para la integración con ideas falta pasar los tests automáticos que hizo Felipe, para ello está develop mergeada con mi rama, pero no estan los tests pasados. 
