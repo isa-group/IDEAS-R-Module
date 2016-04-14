@@ -5,7 +5,8 @@
  */
 package es.us.isa.ideas.controller.R;
 
-import es.us.isa.ideas.common.AppAnnotations;
+
+import es.us.isa.ideas.module.common.AppAnnotations;
 import java.util.ArrayList;
 import java.util.List;
 import org.rosuda.REngine.REXPGenericVector;

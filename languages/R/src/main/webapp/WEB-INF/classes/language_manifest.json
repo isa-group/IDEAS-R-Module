@@ -27,13 +27,13 @@ function (operationStructure) {
     var temp;
     CommandApi.doDocumentOperation(operationStructure.id, operationStructure.data, fileUri, function (result) {
         temp = result.context;
-        $.ajax('file/copyProjectToTemp?temDirectory=' + temp + '&fileUri=' + fileUri, {
+        $.ajax('files/copyProjectToTemp?temDirectory=' + temp + '&fileUri=' + fileUri, {
             'type': 'get',
                 'data': {},
                 'success': function (result) {
                 CommandApi.doDocumentOperation('executeScript2', operationStructure.data, fileUri, function (result) {
 
-                    $.ajax('file/copyTemptoProject?temDirectory=' + temp + '&fileUri=' + fileUri, {
+                    $.ajax('files/copyTemptoProject?temDirectory=' + temp + '&fileUri=' + fileUri, {
                         'type': 'get',
                             'data': operationStructure.id,
                             'success': function (result) {

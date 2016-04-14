@@ -48,7 +48,7 @@
     function canvasPlot(fileUri) {
         var canvas = document.getElementById("canvasPlot");
         var img = $('#selecPlot').val();
-        var url = '/file/get/' + fileUri + '/<%=WorkspaceSync.OUTPUT_FOLDER%>/' + img;        
+        var url = '/files/get/' + fileUri + '/<%=WorkspaceSync.OUTPUT_FOLDER%>/' + img;        
         //window.alert(fileUri);
         /*$.get(url, function(image){
          var con=canvas.getContext("2d");

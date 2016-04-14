@@ -4,9 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.UUID;
 
-import es.us.isa.ideas.utils.repolab.AuthenticationManagerDelegate;
-import es.us.isa.ideas.utils.repolab.RepoLab;
-import es.us.isa.ideas.utils.repolab.impl.fs.FSFacade;
+
 
 public class PathTest {
 

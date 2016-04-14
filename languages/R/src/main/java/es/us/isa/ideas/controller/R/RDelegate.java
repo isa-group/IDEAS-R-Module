@@ -2,6 +2,8 @@ package es.us.isa.ideas.controller.R;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import es.us.isa.ideas.module.common.AppResponse;
+import es.us.isa.ideas.module.common.AppResponse.Status;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -12,9 +14,7 @@ import java.util.UUID;
 import org.math.R.RserverConf;
 import org.math.R.Rsession;
 import org.rosuda.REngine.REXPGenericVector;
-import es.us.isa.ideas.common.AppResponse;
 
-import es.us.isa.ideas.common.AppResponse.Status;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

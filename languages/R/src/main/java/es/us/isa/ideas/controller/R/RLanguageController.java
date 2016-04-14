@@ -1,12 +1,13 @@
 package es.us.isa.ideas.controller.R;
 
+import es.us.isa.ideas.module.common.AppResponse;
+import es.us.isa.ideas.module.common.AppResponse.Status;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.us.isa.ideas.common.AppResponse;
-import es.us.isa.ideas.common.AppResponse.Status;
+;
 import es.us.isa.ideas.module.controller.BaseLanguageController;
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,7 +37,7 @@ public class RLanguageController extends BaseLanguageController {
 
     @RequestMapping(value = "/operation/{id}/execute", method = RequestMethod.POST)
     @ResponseBody
-    public AppResponse executeOperation(String id, String content, String fileUri, HttpServletRequest request) {
+    public AppResponse executeOperation(String id, String content, String fileUri, String data,HttpServletRequest request) {
         RDelegate RD = (RDelegate) request.getSession().getAttribute("RDelegate");
         if (RD == null) {
             request.setAttribute(WorkspaceSync.OUTPUT_FOLDER, "output");
@@ -65,6 +66,12 @@ public class RLanguageController extends BaseLanguageController {
             response.setStatus(Status.ERROR);
         }
         return response;
+    }
+
+    @RequestMapping(value = "/operation/{id}/executeAlt", method = RequestMethod.POST)
+    @Override
+    public AppResponse executeOperation(String id, String content, String fileUri, String data) {
+        return null;
     }
 
 }

@@ -60,8 +60,9 @@
         <!-- IDEAS Dependencies -->
         <dependency>
             <groupId>es.us.isa.ideas</groupId>
-            <artifactId>ideas-core</artifactId>
-            <version>${ideas.version}</version>
+            <artifactId>ideas-base-module</artifactId>
+            <version>0.7</version>
+            <type>jar</type>
         </dependency>
         <!-- R specific dependencies -->        
             <dependency>
@@ -102,6 +103,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
             <version>4.0.1.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 	
