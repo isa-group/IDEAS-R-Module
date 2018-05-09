@@ -17,7 +17,7 @@ public class RLanguageController extends BaseLanguageController {
 
     @RequestMapping(value = "/format/{format}/checkLanguage", method = RequestMethod.POST)
     @ResponseBody
-    public AppResponse checkLanguage(String format, String content, String fileUri) {
+    public AppResponse checkLanguage(String format, String content, String fileUri,HttpServletRequest request) {
 
         AppResponse response = new AppResponse();
         response.setMessage("No error were found in your script. Please, try to execute it to get the R output or errors found.");
@@ -27,7 +27,7 @@ public class RLanguageController extends BaseLanguageController {
 
     @RequestMapping(value = "/convert", method = RequestMethod.POST)
     @ResponseBody
-    public AppResponse convertFormat(String currentFormat, String desiredFormat, String fileUri, String content) {
+    public AppResponse convertFormat(String currentFormat, String desiredFormat, String fileUri, String content,HttpServletRequest request) {
         AppResponse response = new AppResponse();
         response.setMessage("Currently we only suppport the S language.");
         response.setStatus(Status.OK);
@@ -68,10 +68,6 @@ public class RLanguageController extends BaseLanguageController {
         return response;
     }
 
-    @RequestMapping(value = "/operation/{id}/executeAlt", method = RequestMethod.POST)
-    @Override
-    public AppResponse executeOperation(String id, String content, String fileUri, String data) {
-        return null;
-    }
+    
 
 }
