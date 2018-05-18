@@ -21,9 +21,11 @@
                                  "data": {},
                                  "_remoteExecution": "false",
                                  "action": "
-function (operationStructure) {
+function (operationStructure,fileUriOperation) {
     var res;
-    var fileUri = EditorManager.currentUri;
+    var fileUri = fileUriOperation;
+    if(!fileUri)
+        fileUri=EditorManager.currentUri;
     var temp;
     CommandApi.doDocumentOperation(operationStructure.id, operationStructure.data, fileUri, function (result) {
         temp = result.context;
