@@ -20,7 +20,7 @@
                                  "name": "Execute R script",
                                  "data": {},
                                  "_remoteExecution": "false",
-                                 "action": "
+                                 "action": " //# sourceURL=r-ideas-Module-EXECUTE.js
 function (operationStructure,fileUriOperation) {
     var res;
     var fileUri = fileUriOperation;
@@ -29,13 +29,13 @@ function (operationStructure,fileUriOperation) {
     var temp;
     CommandApi.doDocumentOperation(operationStructure.id, operationStructure.data, fileUri, function (result) {
         temp = result.context;
-        $.ajax('files/copyProjectToTemp?temDirectory=' + temp + '/R-OutputFolder&fileUri=' + fileUri, {
+        $.ajax('files/copyProjectToTemp?temDirectory=' + temp + '&fileUri=' + fileUri, {
             'type': 'get',
                 'data': {},
                 'success': function (result) {
                 CommandApi.doDocumentOperation('executeScript2', operationStructure.data, fileUri, function (result) {
 
-                    $.ajax('files/copyTemptoProject?temDirectory=' + temp + '&fileUri=' + fileUri, {
+                    $.ajax('files/copyTemptoProject?temDirectory=' + temp + '/R-OutputFolder&fileUri=' + fileUri, {
                         'type': 'get',
                             'data': operationStructure.id,
                             'success': function (result) {
