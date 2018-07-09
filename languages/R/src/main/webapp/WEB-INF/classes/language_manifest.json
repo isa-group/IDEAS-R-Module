@@ -21,7 +21,7 @@
                                  "data": {},
                                  "_remoteExecution": "false",
                                  "action": " //# sourceURL=r-ideas-Module-EXECUTE.js
-function (operationStructure,fileUriOperation) {
+function (operationStructure,fileUriOperation,callback) {
     var res;
     var fileUri = fileUriOperation;
     if(!fileUri)
@@ -52,6 +52,8 @@ function (operationStructure,fileUriOperation) {
                                 $('.indented.apl_editor_' + WorkspaceManager.getSelectedWorkspace())
                                     .parent().addClass('active');
                                 $('.dynatree-expander').click();
+                                if(callback)
+                                    callback(ts);
                             });
                         },
                             'onError': function (result) {
